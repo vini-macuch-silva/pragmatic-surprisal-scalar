@@ -1,0 +1,1086 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+***
+
+### Exploratory analysis
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_respond_einige <- mcmc_areas(
+  posterior_SHAPE_respond,
+  pars = c("b_logConEinigeUnbiased", 
+           "b_logConEinigeInfelict", 
+           "b_logConEinigeFalse",
+           "b_respond_typePragmatic",
+           "b_logConEinigeUnbiased:respond_typePragmatic",
+           "b_logConEinigeInfelict:respond_typePragmatic",
+           "b_logConEinigeFalse:respond_typePragmatic",
+           "b_respond_typeMixed",
+           "b_logConEinigeUnbiased:respond_typeMixed",
+           "b_logConEinigeInfelict:respond_typeMixed",
+           "b_logConEinigeFalse:respond_typeMixed"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[semantic] Unbiased', 
+                              'Infelict', 
+                              'False',
+                              '[pragmatic] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[mixed] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False')) +
+  ggtitle("Model 1 (condition x pragmatic profile)\nEinige")
+
+post_respond_alle <- mcmc_areas(
+  posterior_SHAPE_respond,
+  pars = c("b_logConAlleUnbiased", 
+           "b_logConAlleBiased", 
+           "b_logConAlleFalse",
+           "b_logConAlleUnbiased:respond_typePragmatic",
+           "b_logConAlleBiased:respond_typePragmatic",
+           "b_logConAlleFalse:respond_typePragmatic",
+           "b_logConAlleUnbiased:respond_typeMixed",
+           "b_logConAlleBiased:respond_typeMixed",
+           "b_logConAlleFalse:respond_typeMixed"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[semantic] Unbiased', 
+                              'Biased', 
+                              'False',
+                              '[pragmatic] Unbiased', 
+                              'Biased', 
+                              'False',
+                              '[mixed] Unbiased', 
+                              'Biased', 
+                              'False'),
+                   position = "right") +
+  ggtitle("\nAlle") +
+  theme(plot.title = element_text(hjust = 1))
+
+ggarrange(post_respond_einige, post_respond_alle)
+
+```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_respond_crit_einige_sem <- mcmc_areas(
+  posterior_SHAPE_respond_crit,
+  pars = c("b_criticalKreise", 
+           "b_criticalQuadrate", 
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:criticalKreise",
+           "b_logConEinigeUnbiased:criticalQuadrate",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:criticalKreise",
+           "b_logConEinigeInfelict:criticalQuadrate",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:criticalKreise",
+           "b_logConEinigeFalse:criticalQuadrate"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[Dreiecke] Unbiased', 
+                              'Infelict', 
+                              'False',
+                              '[Kreise] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[Quadrate] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False')) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word) - Einige\nSemantic")
+
+post_respond_crit_einige_mix <- mcmc_areas(
+  posterior_SHAPE_respond_crit,
+  pars = c("b_respond_typeMixed", 
+           "b_respond_typeMixed:criticalKreise",
+           "b_respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeUnbiased:respond_typeMixed",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeInfelict:respond_typeMixed",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeFalse:respond_typeMixed",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line.y = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("\nMixed")
+
+post_respond_crit_einige_prag <- mcmc_areas(
+  posterior_SHAPE_respond_crit,
+  pars = c("b_respond_typePragmatic", 
+           "b_respond_typePragmatic:criticalKreise",
+           "b_respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeUnbiased:respond_typePragmatic",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeInfelict:respond_typePragmatic",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeFalse:respond_typePragmatic",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[Dreiecke] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[Kreise] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[Quadrate] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False'),
+                   position = "right") +
+  theme(plot.title = element_text(hjust = 1)) +
+  ggtitle("\nPragmatic")
+
+
+ggarrange(post_respond_crit_einige_sem, post_respond_crit_einige_mix, post_respond_crit_einige_prag, nrow = 1)
+
+```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_respond_crit_alle_sem <- mcmc_areas(
+  posterior_SHAPE_respond_crit,
+  pars = c("b_logConAlleBiased",
+           "b_logConAlleBiased:criticalKreise",
+           "b_logConAlleBiased:criticalQuadrate",
+           "b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:criticalKreise",
+           "b_logConAlleUnbiased:criticalQuadrate",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:criticalKreise",
+           "b_logConAlleFalse:criticalQuadrate"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[Dreiecke] Biased', 
+                              'Unbiased', 
+                              'False',
+                              '[Kreise] Biased',
+                              'Unbiased',
+                              'False',
+                              '[Quadrate] Biased',
+                              'Unbiased',
+                              'False')) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word) - Alle\nSemantic")
+
+post_respond_crit_alle_mix <- mcmc_areas(
+  posterior_SHAPE_respond_crit,
+  pars = c("b_logConAlleBiased:respond_typeMixed", 
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typeMixed",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleFalse:respond_typeMixed",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line.y = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("\nMixed")
+
+post_respond_crit_alle_prag <- mcmc_areas(
+  posterior_SHAPE_respond_crit,
+  pars = c("b_logConAlleBiased:respond_typePragmatic", 
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typePragmatic",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleFalse:respond_typePragmatic",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[Dreiecke] Biased',
+                              'Unbiased',
+                              'False',
+                              '[Kreise] Biased',
+                              'Unbiased',
+                              'False',
+                              '[Quadrate] Biased',
+                              'Unbiased',
+                              'False'),
+                   position = "right") +
+  theme(plot.title = element_text(hjust = 1)) +
+  ggtitle("\nPragmatic")
+
+
+ggarrange(post_respond_crit_alle_sem, post_respond_crit_alle_mix, post_respond_crit_alle_prag, nrow = 1)
+
+```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_respond_trial_einige_sem <- mcmc_areas(
+  posterior_SHAPE_respond_trial,
+  pars = c("b_trial_nametask_three_2", 
+           "b_trial_nametask_three_3", 
+           "b_trial_nametask_three_4",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:trial_nametask_three_2",
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:trial_nametask_three_2",
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[1-21] Unbiased', 
+                              'Infelict', 
+                              'False',
+                              '[22-42] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[43-63] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[64-84] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False')) +
+  ggtitle("Model 3 (condition x pragmatic profile x block) - Einige\nSemantic")
+
+post_respond_trial_einige_mix <- mcmc_areas(
+  posterior_SHAPE_respond_trial,
+  pars = c("b_respond_typeMixed",
+           "b_respond_typeMixed:trial_nametask_three_2", 
+           "b_respond_typeMixed:trial_nametask_three_3", 
+           "b_respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typeMixed",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typeMixed",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typeMixed",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line.y = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("\nMixed")
+
+post_respond_trial_einige_prag <- mcmc_areas(
+  posterior_SHAPE_respond_trial,
+  pars = c("b_respond_typePragmatic",
+           "b_respond_typePragmatic:trial_nametask_three_2", 
+           "b_respond_typePragmatic:trial_nametask_three_3", 
+           "b_respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[1-21] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[22-42] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[43-63] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False',
+                              '[64-84] Biased',
+                              'Unbiased',
+                              'Infelict', 
+                              'False'),
+                   position = "right") +
+  theme(plot.title = element_text(hjust = 1)) +
+  ggtitle("\nPragmatic")
+
+
+ggarrange(post_respond_trial_einige_sem, post_respond_trial_einige_mix, post_respond_trial_einige_prag, nrow = 1)
+
+```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_respond_trial_alle_sem <- mcmc_areas(
+  posterior_SHAPE_respond_trial,
+  pars = c("b_logConAlleBiased",
+           "b_logConAlleBiased:trial_nametask_three_2", 
+           "b_logConAlleBiased:trial_nametask_three_3", 
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:trial_nametask_three_2",
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[1-21] Biased', 
+                              'Unbiased', 
+                              'False',
+                              '[22-42] Biased',
+                              'Unbiased',
+                              'False',
+                              '[43-63] Biased',
+                              'Unbiased',
+                              'False',
+                              '[64-84] Biased',
+                              'Unbiased',
+                              'False')) +
+  ggtitle("Model 3 (condition x pragmatic profile x block) - Alle\nSemantic")
+
+post_respond_trial_alle_mix <- mcmc_areas(
+  posterior_SHAPE_respond_trial,
+  pars = c("b_logConAlleBiased:respond_typeMixed",
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_2", 
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_3", 
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typeMixed",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line.y = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("\nMixed")
+
+post_respond_trial_alle_prag <- mcmc_areas(
+  posterior_SHAPE_respond_trial,
+  pars = c("b_logConAlleBiased:respond_typePragmatic",
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_2", 
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_3", 
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typePragmatic",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('[1-21] Biased',
+                              'Unbiased',
+                              'False',
+                              '[22-42] Biased',
+                              'Unbiased',
+                              'False',
+                              '[43-63] Biased',
+                              'Unbiased',
+                              'False',
+                              '[64-84] Biased',
+                              'Unbiased',
+                              'False'),
+                   position = "right") +
+  theme(plot.title = element_text(hjust = 1)) +
+  ggtitle("\nPragmatic")
+
+
+ggarrange(post_respond_trial_alle_sem, post_respond_trial_alle_mix, post_respond_trial_alle_prag, nrow = 1)
+
+```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_respond_crit_01_42_einige_sem <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_criticalKreise",
+           "b_criticalQuadrate",
+           "b_trial_nametask_three_2",
+           "b_criticalKreise:trial_nametask_three_2",
+           "b_criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:criticalKreise",
+           "b_logConEinigeUnbiased:criticalQuadrate",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:criticalKreise",
+           "b_logConEinigeInfelict:criticalQuadrate",
+           "b_logConEinigeInfelict:trial_nametask_three_2",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:criticalKreise",
+           "b_logConEinigeFalse:criticalQuadrate",
+           "b_logConEinigeFalse:trial_nametask_three_2",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_2"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Kreise - 1-21',
+                              'Biased - Quadrate - 1-21',
+                              'Biased - Dreiecke - 22-42',
+                              'Biased - Kreise - 22-42',
+                              'Biased - Quadrate - 22-42',
+                              'Unbiased - Dreiecke - 1-21',
+                              'Unbiased - Kreise - 1-21',
+                              'Unbiased - Quadrate - 1-21',
+                              'Unbiased - Dreiecke - 22-42',
+                              'Unbiased - Kreise - 22-42',
+                              'Unbiased - Quadrate - 22-42',
+                              'Infelict - Dreiecke - 1-21',
+                              'Infelict - Kreise - 1-21',
+                              'Infelict - Quadrate - 1-21',
+                              'Infelict - Dreiecke - 22-42',
+                              'Infelict - Kreise - 22-42',
+                              'Infelict - Quadrate - 22-42',
+                              'False - Dreiecke - 1-21',
+                              'False - Kreise - 1-21',
+                              'False - Quadrate - 1-21',
+                              'False - Dreiecke - 22-42',
+                              'False - Kreise - 22-42',
+                              'False - Quadrate - 22-42')) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nEinige - Semantic")
+
+post_respond_crit_43_84_einige_sem <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_trial_nametask_three_3",
+           "b_criticalKreise:trial_nametask_three_3",
+           "b_criticalQuadrate:trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_criticalKreise:trial_nametask_three_4",
+           "b_criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 43-63',
+                              'Biased - Kreise - 43-63',
+                              'Biased - Quadrate - 43-63',
+                              'Biased - Dreiecke - 64-84',
+                              'Biased - Kreise - 64-84',
+                              'Biased - Quadrate - 64-84',
+                              'Unbiased - Dreiecke - 43-63',
+                              'Unbiased - Kreise - 43-63',
+                              'Unbiased - Quadrate - 43-63',
+                              'Unbiased - Dreiecke - 64-84',
+                              'Unbiased - Kreise - 64-84',
+                              'Unbiased - Quadrate - 64-84',
+                              'Infelict - Dreiecke - 43-63',
+                              'Infelict - Kreise - 43-63',
+                              'Infelict - Quadrate - 43-63',
+                              'Infelict - Dreiecke - 64-84',
+                              'Infelict - Kreise - 64-84',
+                              'Infelict - Quadrate - 64-84',
+                              'False - Dreiecke - 43-63',
+                              'False - Kreise - 43-63',
+                              'False - Quadrate - 43-63',
+                              'False - Dreiecke - 64-84',
+                              'False - Kreise - 64-84',
+                              'False - Quadrate - 64-84'),
+                   position = "right")
+
+ggarrange(post_respond_crit_01_42_einige_sem, post_respond_crit_43_84_einige_sem)
+
+post_respond_crit_01_42_einige_mix <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_respond_typeMixed",
+           "b_respond_typeMixed:criticalKreise",
+           "b_respond_typeMixed:criticalQuadrate",
+           "b_respond_typeMixed:trial_nametask_three_2",
+           "b_respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_2"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 1-21',
+                              'Biased - Kreise - 1-21',
+                              'Biased - Quadrate - 1-21',
+                              'Biased - Dreiecke - 22-42',
+                              'Biased - Kreise - 22-42',
+                              'Biased - Quadrate - 22-42',
+                              'Unbiased - Dreiecke - 1-21',
+                              'Unbiased - Kreise - 1-21',
+                              'Unbiased - Quadrate - 1-21',
+                              'Unbiased - Dreiecke - 22-42',
+                              'Unbiased - Kreise - 22-42',
+                              'Unbiased - Quadrate - 22-42',
+                              'Infelict - Dreiecke - 1-21',
+                              'Infelict - Kreise - 1-21',
+                              'Infelict - Quadrate - 1-21',
+                              'Infelict - Dreiecke - 22-42',
+                              'Infelict - Kreise - 22-42',
+                              'Infelict - Quadrate - 22-42',
+                              'False - Dreiecke - 1-21',
+                              'False - Kreise - 1-21',
+                              'False - Quadrate - 1-21',
+                              'False - Dreiecke - 22-42',
+                              'False - Kreise - 22-42',
+                              'False - Quadrate - 22-42')) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nEinige - Mixed")
+
+post_respond_crit_43_84_einige_mix <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_respond_typeMixed:trial_nametask_three_3",
+           "b_respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_respond_typeMixed:trial_nametask_three_4",
+           "b_respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_respond_typeMixed:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 43-63',
+                              'Biased - Kreise - 43-63',
+                              'Biased - Quadrate - 43-63',
+                              'Biased - Dreiecke - 64-84',
+                              'Biased - Kreise - 64-84',
+                              'Biased - Quadrate - 64-84',
+                              'Unbiased - Dreiecke - 43-63',
+                              'Unbiased - Kreise - 43-63',
+                              'Unbiased - Quadrate - 43-63',
+                              'Unbiased - Dreiecke - 64-84',
+                              'Unbiased - Kreise - 64-84',
+                              'Unbiased - Quadrate - 64-84',
+                              'Infelict - Dreiecke - 43-63',
+                              'Infelict - Kreise - 43-63',
+                              'Infelict - Quadrate - 43-63',
+                              'Infelict - Dreiecke - 64-84',
+                              'Infelict - Kreise - 64-84',
+                              'Infelict - Quadrate - 64-84',
+                              'False - Dreiecke - 43-63',
+                              'False - Kreise - 43-63',
+                              'False - Quadrate - 43-63',
+                              'False - Dreiecke - 64-84',
+                              'False - Kreise - 64-84',
+                              'False - Quadrate - 64-84'),
+                   position = "right")
+
+ggarrange(post_respond_crit_01_42_einige_mix, post_respond_crit_43_84_einige_mix)
+
+post_respond_crit_01_42_einige_prag <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_respond_typePragmatic",
+           "b_respond_typePragmatic:criticalKreise",
+           "b_respond_typePragmatic:criticalQuadrate",
+           "b_respond_typePragmatic:trial_nametask_three_2",
+           "b_respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_respond_typePragmatic:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typePragmatic",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typePragmatic",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typePragmatic",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 1-21',
+                              'Biased - Kreise - 1-21',
+                              'Biased - Quadrate - 1-21',
+                              'Biased - Dreiecke - 22-42',
+                              'Biased - Kreise - 22-42',
+                              'Biased - Quadrate - 22-42',
+                              'Unbiased - Dreiecke - 1-21',
+                              'Unbiased - Kreise - 1-21',
+                              'Unbiased - Quadrate - 1-21',
+                              'Unbiased - Dreiecke - 22-42',
+                              'Unbiased - Kreise - 22-42',
+                              'Unbiased - Quadrate - 22-42',
+                              'Infelict - Dreiecke - 1-21',
+                              'Infelict - Kreise - 1-21',
+                              'Infelict - Quadrate - 1-21',
+                              'Infelict - Dreiecke - 22-42',
+                              'Infelict - Kreise - 22-42',
+                              'Infelict - Quadrate - 22-42',
+                              'False - Dreiecke - 1-21',
+                              'False - Kreise - 1-21',
+                              'False - Quadrate - 1-21',
+                              'False - Dreiecke - 22-42',
+                              'False - Kreise - 22-42',
+                              'False - Quadrate - 22-42')) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nEinige - Pragmatic")
+
+post_respond_crit_43_84_einige_prag <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_respond_typePragmatic:trial_nametask_three_3",
+           "b_respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_respond_typePragmatic:trial_nametask_three_4",
+           "b_respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 43-63',
+                              'Biased - Kreise - 43-63',
+                              'Biased - Quadrate - 43-63',
+                              'Biased - Dreiecke - 64-84',
+                              'Biased - Kreise - 64-84',
+                              'Biased - Quadrate - 64-84',
+                              'Unbiased - Dreiecke - 43-63',
+                              'Unbiased - Kreise - 43-63',
+                              'Unbiased - Quadrate - 43-63',
+                              'Unbiased - Dreiecke - 64-84',
+                              'Unbiased - Kreise - 64-84',
+                              'Unbiased - Quadrate - 64-84',
+                              'Infelict - Dreiecke - 43-63',
+                              'Infelict - Kreise - 43-63',
+                              'Infelict - Quadrate - 43-63',
+                              'Infelict - Dreiecke - 64-84',
+                              'Infelict - Kreise - 64-84',
+                              'Infelict - Quadrate - 64-84',
+                              'False - Dreiecke - 43-63',
+                              'False - Kreise - 43-63',
+                              'False - Quadrate - 43-63',
+                              'False - Dreiecke - 64-84',
+                              'False - Kreise - 64-84',
+                              'False - Quadrate - 64-84'),
+                   position = "right")
+
+ggarrange(post_respond_crit_01_42_einige_prag, post_respond_crit_43_84_einige_prag)
+
+```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_respond_crit_01_42_alle_sem <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_logConAlleBiased",
+           "b_logConAlleBiased:criticalKreise",
+           "b_logConAlleBiased:criticalQuadrate",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:criticalKreise",
+           "b_logConAlleUnbiased:criticalQuadrate",
+           "b_logConAlleUnbiased:trial_nametask_three_2",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:criticalKreise",
+           "b_logConAlleFalse:criticalQuadrate",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_2"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 1-21',
+                              'Biased - Kreise - 1-21',
+                              'Biased - Quadrate - 1-21',
+                              'Biased - Dreiecke - 22-42',
+                              'Biased - Kreise - 22-42',
+                              'Biased - Quadrate - 22-42',
+                              'Unbiased - Dreiecke - 1-21',
+                              'Unbiased - Kreise - 1-21',
+                              'Unbiased - Quadrate - 1-21',
+                              'Unbiased - Dreiecke - 22-42',
+                              'Unbiased - Kreise - 22-42',
+                              'Unbiased - Quadrate - 22-42',
+                              'False - Dreiecke - 1-21',
+                              'False - Kreise - 1-21',
+                              'False - Quadrate - 1-21',
+                              'False - Dreiecke - 22-42',
+                              'False - Kreise - 22-42',
+                              'False - Quadrate - 22-42')) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Semantic")
+
+post_respond_crit_43_84_einige_sem <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 43-63',
+                              'Biased - Kreise - 43-63',
+                              'Biased - Quadrate - 43-63',
+                              'Biased - Dreiecke - 64-84',
+                              'Biased - Kreise - 64-84',
+                              'Biased - Quadrate - 64-84',
+                              'Unbiased - Dreiecke - 43-63',
+                              'Unbiased - Kreise - 43-63',
+                              'Unbiased - Quadrate - 43-63',
+                              'Unbiased - Dreiecke - 64-84',
+                              'Unbiased - Kreise - 64-84',
+                              'Unbiased - Quadrate - 64-84',
+                              'False - Dreiecke - 43-63',
+                              'False - Kreise - 43-63',
+                              'False - Quadrate - 43-63',
+                              'False - Dreiecke - 64-84',
+                              'False - Kreise - 64-84',
+                              'False - Quadrate - 64-84'),
+                   position = "right")
+
+ggarrange(post_respond_crit_01_42_einige_sem, post_respond_crit_43_84_einige_sem)
+
+post_respond_crit_01_42_alle_mix <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_logConAlleBiased:respond_typeMixed",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typeMixed",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_2"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 1-21',
+                              'Biased - Kreise - 1-21',
+                              'Biased - Quadrate - 1-21',
+                              'Biased - Dreiecke - 22-42',
+                              'Biased - Kreise - 22-42',
+                              'Biased - Quadrate - 22-42',
+                              'Unbiased - Dreiecke - 1-21',
+                              'Unbiased - Kreise - 1-21',
+                              'Unbiased - Quadrate - 1-21',
+                              'Unbiased - Dreiecke - 22-42',
+                              'Unbiased - Kreise - 22-42',
+                              'Unbiased - Quadrate - 22-42',
+                              'False - Dreiecke - 1-21',
+                              'False - Kreise - 1-21',
+                              'False - Quadrate - 1-21',
+                              'False - Dreiecke - 22-42',
+                              'False - Kreise - 22-42',
+                              'False - Quadrate - 22-42')) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Mixed")
+
+post_respond_crit_43_84_alle_mix <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_logConAlleBiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 43-63',
+                              'Biased - Kreise - 43-63',
+                              'Biased - Quadrate - 43-63',
+                              'Biased - Dreiecke - 64-84',
+                              'Biased - Kreise - 64-84',
+                              'Biased - Quadrate - 64-84',
+                              'Unbiased - Dreiecke - 43-63',
+                              'Unbiased - Kreise - 43-63',
+                              'Unbiased - Quadrate - 43-63',
+                              'Unbiased - Dreiecke - 64-84',
+                              'Unbiased - Kreise - 64-84',
+                              'Unbiased - Quadrate - 64-84',
+                              'False - Dreiecke - 43-63',
+                              'False - Kreise - 43-63',
+                              'False - Quadrate - 43-63',
+                              'False - Dreiecke - 64-84',
+                              'False - Kreise - 64-84',
+                              'False - Quadrate - 64-84'),
+                   position = "right")
+
+ggarrange(post_respond_crit_01_42_alle_mix, post_respond_crit_43_84_alle_mix)
+
+post_respond_crit_01_42_alle_prag <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_logConAlleBiased:respond_typePragmatic",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typePragmatic",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 1-21',
+                              'Biased - Kreise - 1-21',
+                              'Biased - Quadrate - 1-21',
+                              'Biased - Dreiecke - 22-42',
+                              'Biased - Kreise - 22-42',
+                              'Biased - Quadrate - 22-42',
+                              'Unbiased - Dreiecke - 1-21',
+                              'Unbiased - Kreise - 1-21',
+                              'Unbiased - Quadrate - 1-21',
+                              'Unbiased - Dreiecke - 22-42',
+                              'Unbiased - Kreise - 22-42',
+                              'Unbiased - Quadrate - 22-42',
+                              'False - Dreiecke - 1-21',
+                              'False - Kreise - 1-21',
+                              'False - Quadrate - 1-21',
+                              'False - Dreiecke - 22-42',
+                              'False - Kreise - 22-42',
+                              'False - Quadrate - 22-42')) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Pragmatic")
+
+post_respond_crit_43_84_alle_prag <- mcmc_areas(
+  posterior_SHAPE_respond_crit_trial,
+  pars = c("b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Dreiecke - 43-63',
+                              'Biased - Kreise - 43-63',
+                              'Biased - Quadrate - 43-63',
+                              'Biased - Dreiecke - 64-84',
+                              'Biased - Kreise - 64-84',
+                              'Biased - Quadrate - 64-84',
+                              'Unbiased - Dreiecke - 43-63',
+                              'Unbiased - Kreise - 43-63',
+                              'Unbiased - Quadrate - 43-63',
+                              'Unbiased - Dreiecke - 64-84',
+                              'Unbiased - Kreise - 64-84',
+                              'Unbiased - Quadrate - 64-84',
+                              'False - Dreiecke - 43-63',
+                              'False - Kreise - 43-63',
+                              'False - Quadrate - 43-63',
+                              'False - Dreiecke - 64-84',
+                              'False - Kreise - 64-84',
+                              'False - Quadrate - 64-84'),
+                   position = "right")
+
+ggarrange(post_respond_crit_01_42_alle_prag, post_respond_crit_43_84_alle_prag)
+
+```

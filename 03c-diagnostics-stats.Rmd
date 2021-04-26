@@ -1,0 +1,685 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+***
+
+### Confirmatory analysis
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE <- nuts_params(RT_SHAPE)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE, pars = c("b_logConEinigeUnbiased",
+                                     "b_logConEinigeInfelict",
+                                     "b_logConEinigeFalse", 
+                                     "b_logConAlleUnbiased",
+                                     "b_logConAlleBiased", 
+                                     "b_logConAlleFalse"),
+           np = np_SHAPE) +
+  ggtitle("Model 1 (condition)")
+
+```
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_crit <- nuts_params(RT_SHAPE_crit)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_crit, pars = c("b_criticalKreise", 
+                                          "b_criticalQuadrate",
+                                          "b_logConEinigeUnbiased",
+                                          "b_logConEinigeUnbiased:criticalKreise",
+                                          "b_logConEinigeUnbiased:criticalQuadrate",
+                                          "b_logConEinigeInfelict",
+                                          "b_logConEinigeInfelict:criticalKreise",
+                                          "b_logConEinigeInfelict:criticalQuadrate",
+                                          "b_logConEinigeFalse",
+                                          "b_logConEinigeFalse:criticalKreise",
+                                          "b_logConEinigeFalse:criticalQuadrate"),
+           np = np_SHAPE_crit) +
+  ggtitle("Model 2 (condition x critical word)\nEinige")
+
+mcmc_trace(posterior_SHAPE_crit, pars = c("b_logConAlleUnbiased",
+                                          "b_logConAlleUnbiased:criticalKreise",
+                                          "b_logConAlleUnbiased:criticalQuadrate",
+                                          "b_logConAlleBiased",
+                                          "b_logConAlleBiased:criticalKreise",
+                                          "b_logConAlleBiased:criticalQuadrate",
+                                          "b_logConAlleFalse",
+                                          "b_logConAlleFalse:criticalKreise",
+                                          "b_logConAlleFalse:criticalQuadrate"),
+           np = np_SHAPE_crit) +
+  ggtitle("Model 2 (condition x critical word)\nAlle")
+
+```
+
+```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+np_SHAPE_trial <- nuts_params(RT_SHAPE_trial)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_trial, pars = c("b_trial_nametask_three_2", 
+           "b_trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:trial_nametask_three_2", 
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:trial_nametask_three_2", 
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4"),
+           np = np_SHAPE_trial) +
+  ggtitle("Model 3 (condition x block)\nEinige")
+
+mcmc_trace(posterior_SHAPE_trial, pars = c("b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleBiased",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4"),
+           np = np_SHAPE_trial) +
+  ggtitle("Model 3 (condition x block)\nAlle")
+
+```
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_crit_trial <- nuts_params(RT_SHAPE_crit_trial)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_crit_trial, pars = c("b_criticalKreise",
+           "b_criticalQuadrate",
+           "b_trial_nametask_three_2",
+           "b_criticalKreise:trial_nametask_three_2", 
+           "b_criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:criticalKreise",
+           "b_logConEinigeUnbiased:criticalQuadrate",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:criticalKreise",
+           "b_logConEinigeInfelict:criticalQuadrate",
+           "b_logConEinigeInfelict:trial_nametask_three_2",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:criticalKreise",
+           "b_logConEinigeFalse:criticalQuadrate",
+           "b_logConEinigeFalse:trial_nametask_three_2",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_2"),
+           np = np_SHAPE_crit_trial) +
+  ggtitle("Model 4 (condition x critical word x block)\nEinige")
+
+mcmc_trace(posterior_SHAPE_crit_trial, pars = c("b_trial_nametask_three_3",
+           "b_criticalKreise:trial_nametask_three_3",
+           "b_criticalQuadrate:trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_criticalKreise:trial_nametask_three_4",
+           "b_criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_4"),
+           np = np_SHAPE_crit_trial) +
+  ggtitle("Model 4 (condition x critical word x block)\nEinige")
+
+mcmc_trace(posterior_SHAPE_crit_trial, pars = c("b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:criticalKreise",
+           "b_logConAlleUnbiased:criticalQuadrate",
+           "b_logConAlleUnbiased:trial_nametask_three_2",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleBiased",
+           "b_logConAlleBiased:criticalKreise",
+           "b_logConAlleBiased:criticalQuadrate",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:criticalKreise",
+           "b_logConAlleFalse:criticalQuadrate",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_2"),
+           np = np_SHAPE_crit_trial) +
+  ggtitle("Model 4 (condition x critical word x block)\nAlle")
+
+mcmc_trace(posterior_SHAPE_crit_trial, pars = c(
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_4"),
+           np = np_SHAPE_crit_trial) +
+  ggtitle("Model 4 (condition x critical word x block)\nAlle")
+
+```
+
+***
+
+### Exploratory analysis
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_respond <- nuts_params(RT_SHAPE_respond)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_respond, pars = c("b_logConEinigeUnbiased",
+                                             "b_logConEinigeInfelict",
+                                             "b_logConEinigeFalse",
+                                             "b_respond_typePragmatic",
+                                             "b_logConEinigeUnbiased:respond_typePragmatic",
+                                             "b_logConEinigeInfelict:respond_typePragmatic",
+                                             "b_logConEinigeFalse:respond_typePragmatic",
+                                             "b_respond_typeMixed",
+                                             "b_logConEinigeUnbiased:respond_typeMixed",
+                                             "b_logConEinigeInfelict:respond_typeMixed",
+                                             "b_logConEinigeFalse:respond_typeMixed"), 
+           np = np_SHAPE_respond) +
+  ggtitle("Model 1 (condition x pragmatic profile)\nEinige")
+
+mcmc_trace(posterior_SHAPE_respond, pars = c("b_logConAlleUnbiased",
+                                             "b_logConAlleBiased", 
+                                             "b_logConAlleFalse", "b_logConAlleUnbiased:respond_typePragmatic",
+                                             "b_logConAlleBiased:respond_typePragmatic",
+                                             "b_logConAlleFalse:respond_typePragmatic",
+                                             "b_logConAlleUnbiased:respond_typeMixed",
+                                             "b_logConAlleBiased:respond_typeMixed",
+                                             "b_logConAlleFalse:respond_typeMixed"), 
+           np = np_SHAPE_respond) +
+  ggtitle("Model 1 (condition x pragmatic profile)\nAlle")
+
+```
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_respond_crit <- nuts_params(RT_SHAPE_respond_crit)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_respond_crit, pars = c("b_criticalKreise", 
+           "b_criticalQuadrate", 
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:criticalKreise",
+           "b_logConEinigeUnbiased:criticalQuadrate",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:criticalKreise",
+           "b_logConEinigeInfelict:criticalQuadrate",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:criticalKreise",
+           "b_logConEinigeFalse:criticalQuadrate"), 
+           np = np_SHAPE_respond_crit) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word)\nEinige - Semantic")
+
+mcmc_trace(posterior_SHAPE_respond_crit, pars = c("b_respond_typeMixed", 
+           "b_respond_typeMixed:criticalKreise",
+           "b_respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeUnbiased:respond_typeMixed",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeInfelict:respond_typeMixed",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeFalse:respond_typeMixed",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate"), 
+           np = np_SHAPE_respond_crit) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word)\nEinige - Mixed")
+
+mcmc_trace(posterior_SHAPE_respond_crit, pars = c("b_respond_typePragmatic", 
+           "b_respond_typePragmatic:criticalKreise",
+           "b_respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeUnbiased:respond_typePragmatic",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeInfelict:respond_typePragmatic",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate",
+           "b_logConEinigeFalse:respond_typePragmatic",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate"), 
+           np = np_SHAPE_respond_crit) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word)\nEinige - Pragmatic")
+
+```
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_respond_crit <- nuts_params(RT_SHAPE_respond_crit)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_respond_crit, pars = c("b_logConAlleBiased",
+           "b_logConAlleBiased:criticalKreise",
+           "b_logConAlleBiased:criticalQuadrate",
+           "b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:criticalKreise",
+           "b_logConAlleUnbiased:criticalQuadrate",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:criticalKreise",
+           "b_logConAlleFalse:criticalQuadrate"), 
+           np = np_SHAPE_respond_crit) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word)\nAlle - Semantic")
+
+mcmc_trace(posterior_SHAPE_respond_crit, pars = c("b_logConAlleBiased:respond_typeMixed", 
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typeMixed",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleFalse:respond_typeMixed",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate"), 
+           np = np_SHAPE_respond_crit) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word)\nAlle - Mixed")
+
+mcmc_trace(posterior_SHAPE_respond_crit, pars = c("b_logConAlleBiased:respond_typePragmatic", 
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typePragmatic",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleFalse:respond_typePragmatic",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate"), 
+           np = np_SHAPE_respond_crit) +
+  ggtitle("Model 2 (condition x pragmatic profile x critical word)\nAlle - Pragmatic")
+
+```
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_respond_trial <- nuts_params(RT_SHAPE_respond_trial)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_respond_trial, pars = c("b_trial_nametask_three_2", 
+           "b_trial_nametask_three_3", 
+           "b_trial_nametask_three_4",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:trial_nametask_three_2",
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:trial_nametask_three_2",
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4"), 
+           np = np_SHAPE_respond_crit) +
+  ggtitle("Model 3 (condition x pragmatic profile x block)\nEinige - Semantic")
+
+mcmc_trace(posterior_SHAPE_respond_trial, pars = c("b_respond_typeMixed",
+           "b_respond_typeMixed:trial_nametask_three_2", 
+           "b_respond_typeMixed:trial_nametask_three_3", 
+           "b_respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typeMixed",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typeMixed",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typeMixed",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_4"), 
+           np = np_SHAPE_respond_trial) +
+  ggtitle("Model 3 (condition x pragmatic profile x block)\nEinige - Mixed")
+
+mcmc_trace(posterior_SHAPE_respond_trial, pars = c("b_respond_typePragmatic",
+           "b_respond_typePragmatic:trial_nametask_three_2", 
+           "b_respond_typePragmatic:trial_nametask_three_3", 
+           "b_respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_4"), 
+           np = np_SHAPE_respond_trial) +
+  ggtitle("Model 3 (condition x pragmatic profile x block)\nEinige - Pragmatic")
+
+```
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_respond_trial <- nuts_params(RT_SHAPE_respond_trial)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_respond_trial, pars = c("b_logConAlleBiased",
+           "b_logConAlleBiased:trial_nametask_three_2", 
+           "b_logConAlleBiased:trial_nametask_three_3", 
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:trial_nametask_three_2",
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4"), 
+           np = np_SHAPE_respond_trial) +
+  ggtitle("Model 3 (condition x pragmatic profile x block)\nAlle - Semantic")
+
+mcmc_trace(posterior_SHAPE_respond_trial, pars = c("b_logConAlleBiased:respond_typeMixed",
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_2", 
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_3", 
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typeMixed",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_4"), 
+           np = np_SHAPE_respond_trial) +
+  ggtitle("Model 3 (condition x pragmatic profile x block)\nAlle - Mixed")
+
+mcmc_trace(posterior_SHAPE_respond_trial, pars = c("b_logConAlleBiased:respond_typePragmatic",
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_2", 
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_3", 
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typePragmatic",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_4"), 
+           np = np_SHAPE_respond_trial) +
+  ggtitle("Model 3 (condition x pragmatic profile x block)\nAlle - Pragmatic")
+
+```
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_respond_crit_trial <- nuts_params(RT_SHAPE_respond_crit_trial)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c("b_criticalKreise",
+           "b_criticalQuadrate",
+           "b_trial_nametask_three_2",
+           "b_criticalKreise:trial_nametask_three_2", 
+           "b_criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:criticalKreise",
+           "b_logConEinigeUnbiased:criticalQuadrate",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:criticalKreise",
+           "b_logConEinigeInfelict:criticalQuadrate",
+           "b_logConEinigeInfelict:trial_nametask_three_2",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:criticalKreise",
+           "b_logConEinigeFalse:criticalQuadrate",
+           "b_logConEinigeFalse:trial_nametask_three_2",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_2"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nEinige - Semantic - 1-42")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c("b_trial_nametask_three_3",
+           "b_criticalKreise:trial_nametask_three_3",
+           "b_criticalQuadrate:trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_criticalKreise:trial_nametask_three_4",
+           "b_criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeInfelict:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeInfelict:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4",
+           "b_logConEinigeFalse:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeFalse:criticalQuadrate:trial_nametask_three_4"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile - critical word x block)\nEinige - Semantic - 43-84")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c("b_respond_typeMixed",                    "b_respond_typeMixed:criticalKreise",
+           "b_respond_typeMixed:criticalQuadrate",
+           "b_respond_typeMixed:trial_nametask_three_2",
+           "b_respond_typeMixed:criticalKreise:trial_nametask_three_2", 
+           "b_respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeInfelict:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate",
+           "b_logConEinigeFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_2"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nEinige - Mixed - 1-42")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c("b_respond_typePragmatic",                        "b_respond_typePragmatic:trial_nametask_three_3",
+           "b_respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_respond_typePragmatic:trial_nametask_three_4",
+           "b_respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeInfelict:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConEinigeFalse:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nEinige - Pragmatic - 1-42")
+
+```
+
+
+```{r eval=FALSE, fig.align='center', message=FALSE, warning=FALSE, include=FALSE}
+np_SHAPE_respond_crit_trial <- nuts_params(RT_SHAPE_respond_crit_trial)
+
+color_scheme_set("mix-brightblue-gray")
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c("b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:criticalKreise",
+           "b_logConAlleUnbiased:criticalQuadrate",
+           "b_logConAlleUnbiased:trial_nametask_three_2",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleBiased",
+           "b_logConAlleBiased:criticalKreise",
+           "b_logConAlleBiased:criticalQuadrate",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:criticalKreise",
+           "b_logConAlleFalse:criticalQuadrate",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_2"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Semantic - 1-42")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c(
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleUnbiased:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleUnbiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleBiased:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleBiased:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4",
+           "b_logConAlleFalse:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleFalse:criticalQuadrate:trial_nametask_three_4"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Semantic - 43-84")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c("b_logConAlleUnbiased:respond_typeMixed",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typeMixed",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_2"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Mixed - 1-42")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c(
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typeMixed:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typeMixed:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typeMixed:criticalQuadrate:trial_nametask_three_4"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Mixed - 43-84")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c("b_logConAlleUnbiased:respond_typePragmatic",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typePragmatic",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_2",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_2"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Pragmatic - 1-42")
+
+mcmc_trace(posterior_SHAPE_respond_crit_trial, pars = c(
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleUnbiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleUnbiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleBiased:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleBiased:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_3",
+           "b_logConAlleFalse:respond_typePragmatic:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic:criticalKreise:trial_nametask_three_4",
+           "b_logConAlleFalse:respond_typePragmatic:criticalQuadrate:trial_nametask_three_4"),
+           np = np_SHAPE_respond_crit_trial) +
+  ggtitle("Model 4 (condition x pragmatic profile x critical word x block)\nAlle - Pragmatic - 43-84")
+
+```
+

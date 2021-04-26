@@ -1,0 +1,56 @@
+---
+title: "Pragmatic prediction in the processing of referring expressions containing scalar quantifiers - Diagnostic plots (statistical analyses)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(forcats)
+library(fields)
+library(factoextra)
+library(brms)
+library(bayesplot)
+options(mc.cores = parallel::detectCores ())
+library(ggpubr)
+
+# For bootstrapping 95% confidence intervals
+library(bootstrap)
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+
+# RT_SHAPE <- readRDS("RT_SHAPE.RDS")
+# RT_SHAPE_crit <- readRDS("RT_SHAPE_crit.RDS")
+RT_SHAPE_trial <- readRDS("RT_SHAPE_trial.RDS")
+# RT_SHAPE_crit_trial <- readRDS("RT_SHAPE_crit_trial.RDS")
+# 
+# RT_SHAPE_respond <- readRDS("RT_SHAPE_respond.RDS")
+# RT_SHAPE_respond_crit <- readRDS("RT_SHAPE_respond_crit.RDS")
+# RT_SHAPE_respond_trial <- readRDS("RT_SHAPE_respond_trial.RDS")
+# RT_SHAPE_respond_crit_trial <- readRDS("RT_SHAPE_respond_crit_trial.RDS")
+# 
+# 
+# posterior_SHAPE <- as.array(RT_SHAPE)
+# posterior_SHAPE_crit <- as.array(RT_SHAPE_crit)
+posterior_SHAPE_trial <- as.array(RT_SHAPE_trial)
+# posterior_SHAPE_crit_trial <- as.array(RT_SHAPE_crit_trial)
+# 
+# posterior_SHAPE_respond <- as.array(RT_SHAPE_respond)
+# posterior_SHAPE_respond_crit <- as.array(RT_SHAPE_respond_crit)
+# posterior_SHAPE_respond_trial <- as.array(RT_SHAPE_respond_trial)
+# posterior_SHAPE_respond_crit_trial <- as.array(RT_SHAPE_respond_crit_trial)
+
+```
+
+***
+
+Here we present a series of model diagnostics for each of our fitted statistical models. We present both trace plots and central posterior uncertainty intervals for each respective model. The shaded areas in the latter represent the 90% and 95% uncertainty intervals. 
+
+```{r child = '03a-diagnostics-stats.Rmd'}
+```
+
+```{r child = '03c-diagnostics-stats.Rmd'}
+```
