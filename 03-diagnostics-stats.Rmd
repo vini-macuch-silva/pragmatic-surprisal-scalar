@@ -25,6 +25,8 @@ ci.high <- function(x,na.rm=T) {
 # RT_SHAPE <- readRDS("RT_SHAPE.RDS")
 # RT_SHAPE_crit <- readRDS("RT_SHAPE_crit.RDS")
 RT_SHAPE_trial <- readRDS("RT_SHAPE_trial.RDS")
+RT_SHAPE_trial_simpleRS <- readRDS("RT_SHAPE_trial_simpleRS.RDS")
+RT_SHAPE_trial_fix_only <- readRDS("RT_SHAPE_trial_fix_only.RDS")
 # RT_SHAPE_crit_trial <- readRDS("RT_SHAPE_crit_trial.RDS")
 # 
 # RT_SHAPE_respond <- readRDS("RT_SHAPE_respond.RDS")
@@ -36,6 +38,8 @@ RT_SHAPE_trial <- readRDS("RT_SHAPE_trial.RDS")
 # posterior_SHAPE <- as.array(RT_SHAPE)
 # posterior_SHAPE_crit <- as.array(RT_SHAPE_crit)
 posterior_SHAPE_trial <- as.array(RT_SHAPE_trial)
+posterior_SHAPE_trial_simpleRS <- as.array(RT_SHAPE_trial_simpleRS)
+posterior_SHAPE_trial_fix_only <- as.array(RT_SHAPE_trial_fix_only)
 # posterior_SHAPE_crit_trial <- as.array(RT_SHAPE_crit_trial)
 # 
 # posterior_SHAPE_respond <- as.array(RT_SHAPE_respond)

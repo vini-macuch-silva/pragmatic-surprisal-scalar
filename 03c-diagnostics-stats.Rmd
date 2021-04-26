@@ -74,7 +74,7 @@ mcmc_trace(posterior_SHAPE_trial, pars = c("b_trial_nametask_three_2",
            "b_logConEinigeFalse:trial_nametask_three_3",
            "b_logConEinigeFalse:trial_nametask_three_4"),
            np = np_SHAPE_trial) +
-  ggtitle("Model 3 (condition x block)\nEinige")
+  ggtitle("Model 3a (condition x block)\nEinige")
 
 mcmc_trace(posterior_SHAPE_trial, pars = c("b_logConAlleUnbiased",
            "b_logConAlleUnbiased:trial_nametask_three_2", 
@@ -89,7 +89,77 @@ mcmc_trace(posterior_SHAPE_trial, pars = c("b_logConAlleUnbiased",
            "b_logConAlleFalse:trial_nametask_three_3",
            "b_logConAlleFalse:trial_nametask_three_4"),
            np = np_SHAPE_trial) +
-  ggtitle("Model 3 (condition x block)\nAlle")
+  ggtitle("Model 3a (condition x block)\nAlle")
+
+np_SHAPE_trial_simpleRS <- nuts_params(RT_SHAPE_trial_simpleRS)
+
+mcmc_trace(posterior_SHAPE_trial_simpleRS, pars = c("b_trial_nametask_three_2", 
+           "b_trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:trial_nametask_three_2", 
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:trial_nametask_three_2", 
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4"),
+           np = np_SHAPE_trial_simpleRS) +
+  ggtitle("Model 3b (condition x block)\nEinige")
+
+mcmc_trace(posterior_SHAPE_trial_simpleRS, pars = c("b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleBiased",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4"),
+           np = np_SHAPE_trial_simpleRS) +
+  ggtitle("Model 3b (condition x block)\nAlle")
+
+np_SHAPE_trial_fix_only <- nuts_params(RT_SHAPE_trial_fix_only)
+
+mcmc_trace(posterior_SHAPE_trial, pars = c("b_trial_nametask_three_2", 
+           "b_trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:trial_nametask_three_2", 
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:trial_nametask_three_2", 
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4"),
+           np = np_SHAPE_trial_fix_only) +
+  ggtitle("Model 3c (condition x block)\nEinige")
+
+mcmc_trace(posterior_SHAPE_trial_fix_only, pars = c("b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleBiased",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4"),
+           np = np_SHAPE_trial_fix_only) +
+  ggtitle("Model 3c (condition x block)\nAlle")
 
 ```
 
