@@ -136,7 +136,7 @@ post_trial_einige <- mcmc_areas(
                               'False - Trial 22-42', 
                               'False - Trial 43-63',
                               'False - Trial 64-84')) +
-  ggtitle("Model 3 (condition x block)\nEinige")
+  ggtitle("Model 3 (condition x block) - Full group-level effects\nEinige")
 
 post_trial_alle <- mcmc_areas(
   posterior_SHAPE_trial,
@@ -174,7 +174,206 @@ post_trial_alle <- mcmc_areas(
 
 ggarrange(post_trial_einige, post_trial_alle)
 
+einige_block_1 <- c("logConEinigeUnbiased > 0")
+einige_block_2 <- c("logConEinigeUnbiased:trial_nametask_three_2 > trial_nametask_three_2")
+einige_block_3 <- c("logConEinigeUnbiased:trial_nametask_three_3 > trial_nametask_three_3")
+einige_block_4 <- c("logConEinigeUnbiased:trial_nametask_three_4 > trial_nametask_three_4")
+
+alle_block_1 <- c("logConAlleUnbiased > logConAlleBiased")
+alle_block_2 <- c("logConAlleUnbiased:trial_nametask_three_2 > logConAlleBiased:trial_nametask_three_2")
+alle_block_3 <- c("logConAlleUnbiased:trial_nametask_three_3 > logConAlleBiased:trial_nametask_three_3")
+alle_block_4 <- c("logConAlleUnbiased:trial_nametask_three_4 > logConAlleBiased:trial_nametask_three_4")
+
+hypothesis(RT_SHAPE_trial, einige_block_1)
+hypothesis(RT_SHAPE_trial, einige_block_2)
+hypothesis(RT_SHAPE_trial, einige_block_3)
+hypothesis(RT_SHAPE_trial, einige_block_4)
+
+hypothesis(RT_SHAPE_trial, alle_block_1)
+hypothesis(RT_SHAPE_trial, alle_block_2)
+hypothesis(RT_SHAPE_trial, alle_block_3)
+hypothesis(RT_SHAPE_trial, alle_block_4)
+
 ```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_trial_simpleRS_einige <- mcmc_areas(
+  posterior_SHAPE_trial_simpleRS,
+  pars = c("b_trial_nametask_three_2", 
+           "b_trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:trial_nametask_three_2", 
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:trial_nametask_three_2", 
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Trial 22-42',
+                              'Biased - Trial 43-63',
+                              'Biased - Trial 64-84',
+                              'Unbiased - Trial 1-21', 
+                              'Unbiased - Trial 22-42', 
+                              'Unbiased - Trial 43-63',
+                              'Unbiased - Trial 64-84',
+                              'Infelict - Trial 1-21', 
+                              'Infelict - Trial 22-42', 
+                              'Infelict - Trial 43-63',
+                              'Infelict - Trial 64-84',
+                              'False - Trial 1-21', 
+                              'False - Trial 22-42', 
+                              'False - Trial 43-63',
+                              'False - Trial 64-84')) +
+  ggtitle("Model 3 (condition x block) - Reduced group-level effects\nEinige")
+
+post_trial_simpleRS_alle <- mcmc_areas(
+  posterior_SHAPE_trial_simpleRS,
+  pars = c("b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleBiased",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Unbiased - Trial 1-21', 
+                              'Unbiased - Trial 22-42', 
+                              'Unbiased - Trial 43-63',
+                              'Unbiased - Trial 64-84',
+                              'Biased - Trial 1-21', 
+                              'Biased - Trial 22-42', 
+                              'Biased - Trial 43-63',
+                              'Biased - Trial 64-84',
+                              'False - Trial 1-21', 
+                              'False - Trial 22-42', 
+                              'False - Trial 43-63',
+                              'False - Trial 64-84'),
+                   position = "right") +
+  ggtitle("\nAlle") +
+  theme(plot.title = element_text(hjust = 1))
+
+ggarrange(post_trial_simpleRS_einige, post_trial_simpleRS_alle)
+
+hypothesis(RT_SHAPE_trial_simpleRS, einige_block_1)
+hypothesis(RT_SHAPE_trial_simpleRS, einige_block_2)
+hypothesis(RT_SHAPE_trial_simpleRS, einige_block_3)
+hypothesis(RT_SHAPE_trial_simpleRS, einige_block_4)
+
+hypothesis(RT_SHAPE_trial_simpleRS, alle_block_1)
+hypothesis(RT_SHAPE_trial_simpleRS, alle_block_2)
+hypothesis(RT_SHAPE_trial_simpleRS, alle_block_3)
+hypothesis(RT_SHAPE_trial_simpleRS, alle_block_4)
+
+```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+color_scheme_set("red")
+post_trial_fix_only_einige <- mcmc_areas(
+  posterior_SHAPE_trial_fix_only,
+  pars = c("b_trial_nametask_three_2", 
+           "b_trial_nametask_three_3",
+           "b_trial_nametask_three_4",
+           "b_logConEinigeUnbiased",
+           "b_logConEinigeUnbiased:trial_nametask_three_2",
+           "b_logConEinigeUnbiased:trial_nametask_three_3",
+           "b_logConEinigeUnbiased:trial_nametask_three_4",
+           "b_logConEinigeInfelict",
+           "b_logConEinigeInfelict:trial_nametask_three_2", 
+           "b_logConEinigeInfelict:trial_nametask_three_3",
+           "b_logConEinigeInfelict:trial_nametask_three_4",
+           "b_logConEinigeFalse",
+           "b_logConEinigeFalse:trial_nametask_three_2", 
+           "b_logConEinigeFalse:trial_nametask_three_3",
+           "b_logConEinigeFalse:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Biased - Trial 22-42',
+                              'Biased - Trial 43-63',
+                              'Biased - Trial 64-84',
+                              'Unbiased - Trial 1-21', 
+                              'Unbiased - Trial 22-42', 
+                              'Unbiased - Trial 43-63',
+                              'Unbiased - Trial 64-84',
+                              'Infelict - Trial 1-21', 
+                              'Infelict - Trial 22-42', 
+                              'Infelict - Trial 43-63',
+                              'Infelict - Trial 64-84',
+                              'False - Trial 1-21', 
+                              'False - Trial 22-42', 
+                              'False - Trial 43-63',
+                              'False - Trial 64-84')) +
+  ggtitle("Model 3 (condition x block) - Population-level effects only\nEinige")
+
+post_trial_fix_only_alle <- mcmc_areas(
+  posterior_SHAPE_trial_fix_only,
+  pars = c("b_logConAlleUnbiased",
+           "b_logConAlleUnbiased:trial_nametask_three_2", 
+           "b_logConAlleUnbiased:trial_nametask_three_3",
+           "b_logConAlleUnbiased:trial_nametask_three_4",
+           "b_logConAlleBiased",
+           "b_logConAlleBiased:trial_nametask_three_2",
+           "b_logConAlleBiased:trial_nametask_three_3",
+           "b_logConAlleBiased:trial_nametask_three_4",
+           "b_logConAlleFalse",
+           "b_logConAlleFalse:trial_nametask_three_2",
+           "b_logConAlleFalse:trial_nametask_three_3",
+           "b_logConAlleFalse:trial_nametask_three_4"),
+  prob = 0.9,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(labels = c('Unbiased - Trial 1-21', 
+                              'Unbiased - Trial 22-42', 
+                              'Unbiased - Trial 43-63',
+                              'Unbiased - Trial 64-84',
+                              'Biased - Trial 1-21', 
+                              'Biased - Trial 22-42', 
+                              'Biased - Trial 43-63',
+                              'Biased - Trial 64-84',
+                              'False - Trial 1-21', 
+                              'False - Trial 22-42', 
+                              'False - Trial 43-63',
+                              'False - Trial 64-84'),
+                   position = "right") +
+  ggtitle("\nAlle") +
+  theme(plot.title = element_text(hjust = 1))
+
+ggarrange(post_trial_fix_only_einige, post_trial_fix_only_alle)
+
+hypothesis(RT_SHAPE_trial_fix_only, einige_block_1)
+hypothesis(RT_SHAPE_trial_fix_only, einige_block_2)
+hypothesis(RT_SHAPE_trial_fix_only, einige_block_3)
+hypothesis(RT_SHAPE_trial_fix_only, einige_block_4)
+
+hypothesis(RT_SHAPE_trial_fix_only, alle_block_1)
+hypothesis(RT_SHAPE_trial_fix_only, alle_block_2)
+hypothesis(RT_SHAPE_trial_fix_only, alle_block_3)
+hypothesis(RT_SHAPE_trial_fix_only, alle_block_4)
+
+```
+
 
 ```{r eval=FALSE, fig.align='center', fig.height=6, fig.width=12, message=FALSE, warning=FALSE, include=FALSE}
 

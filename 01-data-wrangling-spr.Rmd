@@ -1,0 +1,336 @@
+---
+title: "Pragmatic prediction in the processing of referring expressions containing scalar quantifiers - Data exploration"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+```{r include=FALSE}
+library(tidyverse)
+library(forcats)
+library(kableExtra)
+library(gridExtra)
+library(grid)
+library(lemon)
+# library(ggplus)
+library(ggrepel)
+library(fields)
+library(factoextra)
+library(ggpubr)
+library(bootstrap)
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+# Import data
+d <- read_csv("results-25-11-sentence.csv", locale = locale(encoding = 'ISO-8859-1'))
+
+# Check number of data points per participant in order to remove incomplete submissions
+table(d$submission_id, d$trial_number)
+
+# Remove incomplete submissions and practice trials
+d <- d %>% 
+  filter(submission_id != 7950, submission_id != 7954) %>% 
+  filter(trial_name != "practice_task_three")
+```
+
+***
+
+The data and analyses here presented refer to a self-paced reading study focused on the processing of referring expressions containing scalar quantifiers. The data was collected in 2019 by means of a laboratory experiment, and it consists of reading times as well as sentence ratings by 58 participants who read 84 German sentences each. The sentences described visual scenes composed of 2 arrays of 8 geometrical shapes each. 
+
+
+Reading times were measured for 8 to 10 regions of interest, each of these consisting of one word of the following sentence structure: QUANT | der | SHAPE | auf | dem | Bild | sind | PROP (| der | Box). Uppercase words stand for terms which varied each trial, namely a scalar quantifier (QUANT), a shape term (SHAPE), and a critical term (PROP) which, depending on the type of picture, could be either an adjective denoting size or color or a preposition. There were two quantifiers -- *einige* (some) and *alle* (all), three shape terms -- *Kreise* (circles), *Quadrate* (squares), and *Dreiecke* (triangles), four color terms -- *gr?n* (green), *blau* (blue), *gelb* (yellow), and *orange* (orange), two size terms -- *klein* (small) and *gro?* (big), and two prepositions -- *in* (inside) and *neben* (next to).
+
+The data was cleaned according to the following criteria:
+
+1. For any given trial, if the total reading time differed by 2.5 positive or negative standard deviations from the mean total reading time, then the trial was excluded from the analysis;
+
+2. For any given participant, if the number of excluded trials was superior to 30% of their total trials, then the participant was excluded from the analysis.
+
+Two participants were removed prior to cleaning as a result of incomplete data sets.
+
+```{r echo=FALSE, fig.align='center', warning=FALSE}
+# Plot data
+# RT single graph
+d$trial_type <- as.factor(d$trial_type)
+
+# Rename variable 'CRIT_3'
+d <- rename(d, PROP = CRIT_3)
+
+# Clean data set
+# Remove unnecessary variables
+d2 = d %>%
+  filter(is.na(trial_type)) %>%
+  select(-trial_type, -property_1, -property_2, -shape_1, -shape_2, -response_1, -response_2, -response_3, -display, -experiment_id) %>% 
+  gather(Region, RT, -submission_id, -quantifier, -picture_type, -condition, -sentence, -response, -listNumber,
+         -trial_number, -picture, -trial_name)
+
+# Convert variable 'Region' to factor
+d2$Region = factor(x = d2$Region,
+                               levels = c("QUANT", "der", "SHAPE", "auf",
+                                          "dem", "Bild", "sind", "PROP", "der_1",
+                                          "Box"))
+
+d2$submission_id <- as.factor(d2$submission_id)
+d2$quantifier <- as.factor(d2$quantifier)
+d2$condition <- as.factor(d2$condition)
+
+# Clean data, as described above
+d2 = d2 %>% group_by(Region, quantifier, condition) %>%
+  mutate(outlier_trial = RT < (mean(RT) - 2.5*sd(RT)) | RT > (mean(RT) + 2.5*sd(RT)) ) %>%
+  ungroup() %>% 
+  group_by(submission_id) %>% 
+  mutate(outlier_participant = mean(outlier_trial, na.rm = TRUE) > 0.3) %>% 
+  ungroup() 
+
+show(paste0("Excluded trials: ", sum(d2$outlier_trial, na.rm = TRUE) ))
+show(paste0("Excluded participants: ", sum(d2$outlier_participant) ))
+
+d2 = d2 %>% filter(outlier_trial == FALSE) %>% 
+  select(-outlier_trial, -outlier_participant)
+```
+
+***
+
+Mean reading times across all sentence regions up until the last critical term are presented below, with a contrast between sentences containing the quantifier *all* and its scalar counterpart *some*, as well as between critical items and controls.
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+
+d2 <- d2 %>%
+  mutate(type = case_when(condition == "biased" | condition == "unbiased" ~ "critical",
+                    condition == "false" | condition == "underspecified" ~ "control",
+                                      TRUE ~ "other"))
+
+d3 = d2 %>%
+  filter(Region %in% c("QUANT", "der", "SHAPE", "auf", "dem", "Bild",
+                       "sind", "PROP")) %>%
+  group_by(Region, quantifier, type) %>%
+  summarise(Mean = mean(RT), CILow = ci.low(RT), CIHigh = ci.high(RT)) %>%
+  mutate(YMin = Mean-CILow, YMax = Mean+CIHigh)
+
+d3$type <- factor(x = d3$type, levels = c("control", "critical"))
+
+d3$quantifier <- factor(x = d3$quantifier, levels = c("some", "all"))
+
+pd <- position_dodge(width = 0.9)
+
+ggplot(d3, aes(Region, Mean, group = interaction(quantifier, type), color = interaction(quantifier, type), fill = interaction(quantifier, type))) +
+  geom_line(size = 1, alpha = .6, position = pd) +
+  geom_errorbar(aes(ymin = YMin, ymax = YMax), width = .1, size = 1, alpha = .8,
+                position = pd) +
+  geom_point(aes(shape = interaction(quantifier, type)), size = 3, 
+             color = "black", alpha = .9, position = pd, stroke = .9) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_text(face = "bold", size = 14, angle = 0, vjust = .5,
+                                    margin = margin(t = 0, r = 15, b = 0, l = 0)),
+        legend.background = element_rect(size = .5, linetype = "solid"),
+        plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
+  labs(y = "RTs") +
+  scale_color_manual(values = rep(c("#d95f02", "#1b9e77"), times = 2),
+                     guide = guide_legend(title = "Condition", title.hjust = 0.5),
+                     labels = c("Einige (Control)", "Alle (Control)", 
+                               "Einige (Critical)", "Alle (Critical)")) +
+  scale_fill_manual(values = rep(c("#d95f02", "#1b9e77"), times = 2),
+                    guide = guide_legend(title = "Condition", title.hjust = 0.5),
+                    labels = c("Einige (Control)", "Alle (Control)", 
+                               "Einige (Critical)", "Alle (Critical)")) +
+  scale_shape_manual(values = c(21, 21, 24, 24), guide = guide_legend(title = "Condition", title.hjust = 0.5), labels = c("Einige (Control)", "Alle (Control)", 
+                               "Einige (Critical)", "Alle (Critical)"))
+```
+
+***
+
+Here, mean reading times are presented in terms of the logical conditions which correspond to different combinations of experimental sentences and pictures, namely:
+
+* *Some* (Expectation-unbiasing) - Sentences containing the quantifier *some* are paired with pictures which do not increase the predictability of either one or the other shape term;
+
+* *Some* (Expectation-biasing) - Sentences containing the quantifier *some* are paired with pictures which increase the predictability of a specific shape term;
+
+* *Some* (Underspecified) - Sentences containing the quantifier *some* are paired with pictures in which not only some but in fact all of the referred shapes match the color, position or size mentioned in the referring expression;
+
+* *All* (Expectation-biasing) - Sentences containing the quantifier *all* are paired with pictures which increase the predictability of a specific shape term;
+
+* *All* (Expectation-unbiasing) - Sentences containing the quantifier *all* are paired with visual scenes which do not increase the predictability of either one or the other shape term;
+
+* *Some* (False) - Sentences containing the quantifier *some* are paired with pictures which are semantically incongruent with the referring expression;
+
+* *All* (False) - Sentences containing the quantifier *all* are paired with pictures which are semantically incongruent with the referring expression.
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+# Computing new columns with logical conditions
+
+d2Logic <- d2 %>%
+  mutate(logCon = case_when(quantifier == "some" & condition == "unbiased" ~ "Einige (Unbiased)",
+                    quantifier == "some" & condition == "biased" ~ "Einige (Biased)",
+                    quantifier == "some" & condition == "false" ~ "Einige (False)",
+                    quantifier == "some" & condition == "underspecified" ~ "Einige (Infelict)",
+                    quantifier == "all" & condition == "unbiased" ~ "Alle (Unbiased)",
+                    quantifier == "all" & condition == "biased" ~ "Alle (Biased)",
+                    quantifier == "all" & condition == "false" ~ "Alle (False)",
+                                      TRUE ~ "other")) %>% 
+  select(-quantifier, -condition) %>%
+  filter(picture_type != "A" | logCon != "Einige (False)")
+
+
+d2Logic$Region <-  factor(x = d2Logic$Region, 
+                            levels = c("QUANT", "der", "SHAPE", "auf", "dem", "Bild", "sind",
+                                       "PROP", "der_1", "Box"))
+
+# Reorder logical conditions
+d2Logic$logCon  <- factor(x = d2Logic$logCon, levels = c("Einige (Biased)", "Einige (Unbiased)", "Einige (False)", "Einige (Infelict)", "Alle (Biased)", "Alle (Unbiased)", "Alle (False)"))
+
+d2Logic$response <- as.factor(d2Logic$response)
+
+d2Logic2 <-  d2Logic %>%
+  filter(Region %in% c("QUANT", "der", "SHAPE", "auf", "dem", "Bild",
+                       "sind", "PROP")) %>%
+  group_by(Region, logCon) %>%
+  summarise(Mean = mean(RT), CILow = ci.low(RT), CIHigh = ci.high(RT)) %>%
+  mutate(YMin = Mean-CILow, YMax = Mean+CIHigh)
+
+pd <- position_dodge(width = 0.9)
+
+d2Logic2 %>%
+  ggplot(aes(Region, Mean, color = logCon, group = logCon, fill = logCon)) +
+  geom_line(size = .8, linetype = "dashed", alpha = .6, position = pd) +
+  geom_errorbar(aes(ymin = YMin, ymax = YMax), width = .1, 
+                size = 1, alpha = .8, position = pd) +
+  geom_point(aes(shape = logCon), size = 3, alpha = .9, position = pd, color = "black", stroke = .9) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_text(face = "bold", size = 14, angle = 0, vjust = .5,
+                                    margin = margin(t = 0, r = 15, b = 0, l = 0)),
+        legend.background = element_rect(size = .5, linetype = "solid"),  
+        plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
+  labs(y = "RTs") +
+  scale_color_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5)) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5)) +
+  scale_shape_manual(values = c(21, 21, 21, 21, 22, 22, 22), guide = guide_legend(title = "Condition", title.hjust = 0.5))
+
+# ggsave("RTlogCon.png", height = 4)
+```
+
+***
+
+Here are presented the sentence ratings per each logical condition.
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+#
+d2Logic$logCon  <- factor(x = d2Logic$logCon, levels = c("Einige (Biased)", "Einige (Unbiased)", "Einige (Infelict)", "Alle (Biased)", "Alle (Unbiased)", "Einige (False)", "Alle (False)"))
+
+respXlogCond <- table(d2Logic$logCon, d2Logic$response)
+
+respXlogCond %>% 
+  kable("latex", escape = F, align = "c") %>%
+  kable_styling(latex_options = "striped", full_width = F) %>% 
+  add_header_above(c(" " = 1, "Description accuracy" = 7)) %>% 
+  pack_rows("Semantically congruent", 1, 5) %>%
+  pack_rows("Semantically incongruent", 6, 7)
+
+respXlogCond <- data.frame(respXlogCond)
+
+respXlogCond <- respXlogCond %>%
+  mutate(congru = case_when(Var1 == "Einige (False)" | Var1 == "Alle (False)" ~ "Incongruent",
+                             TRUE ~ "Congruent"))
+
+respXlogCond$Var1 <- factor(x = respXlogCond$Var1, levels = c("Einige (Biased)", "Einige (Unbiased)", "Einige (Infelict)", "Einige (False)", "Alle (Biased)", "Alle (Unbiased)", "Alle (False)"))
+
+d2$condition <- factor(x = d2$condition, levels = c("biased", "unbiased", "underspecified", "false"))
+
+conditions <- c(biased = "Biased",
+                unbiased = "Unbiased",
+                underspecified = "Infelicitous",
+                false = "False")
+
+ggplot(d2) +
+  geom_bar(aes(response, y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..], fill = quantifier), position = "dodge", color = "black") +
+  facet_wrap(. ~ condition, nrow = 2, labeller = as_labeller(conditions)) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
+        legend.background = element_rect(size = .5, linetype = "solid"),
+        plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.x = element_text(size = 12, face = "bold"), 
+        strip.text.x = element_text(size = 14, face = "bold", margin = margin(t = 15, r = 0, b = 15, l = 0)), legend.position = "bottom") +
+  scale_fill_brewer(palette = "Dark2", guide = guide_legend(title = "Quantifier"), labels = c("Alle", "Einige")) #+
+  scale_y_continuous(labels = scales::percent_format())
+
+# ggsave("ratings.png", height = 4)
+
+```
+
+***
+
+Here, mean reading times at the same regions plotted above are shown in terms of different types of respondents, namely those who consistently rated underspecified expressions as accurate descriptions (logical respondents, n = 40/ 56), those who consistently rated those same expressions as inaccurate descriptions (pragmatic respondents, n = 10/ 56), and those who show a mixed response pattern (mixed respondents, n = 6/ 56).
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+
+d2LogicResp <- d2Logic %>%
+  group_by(submission_id) %>%
+  mutate(response_type = case_when(logCon == "Einige (Infelict)" & (response == "7" | response == "6" | response == "5") ~ "Semantic",
+            logCon == "Einige (Infelict)" & (response == "1" | response == "2" | response == "3") ~ "Pragmatic",
+            logCon == "Einige (Infelict)" & response == "4" ~ "Neutral",
+            TRUE ~ "Other")) %>%
+  mutate(respond_type = case_when(sum(response_type == "Pragmatic") == 0 & sum(response_type == "Semantic") > 0 ~ "Semantic",
+                                   sum(response_type == "Semantic") == 0 & sum(response_type == "Pragmatic") > 0 ~ "Pragmatic",
+                                  TRUE ~ "Mixed")) %>%
+  ungroup() 
+
+d2LogicResp$logCon  <- factor(x = d2LogicResp$logCon, levels = c("Einige (Biased)", "Einige (Unbiased)", "Einige (False)", "Einige (Infelict)", "Alle (Biased)", "Alle (Unbiased)", "Alle (False)"))
+
+d2LogicResp$respond_type <- as.factor(d2LogicResp$respond_type)
+
+respondents <- d2LogicResp %>%
+  group_by(submission_id, respond_type) %>%
+  summarize(n = n()/n()) %>%
+  ungroup() %>%
+  select(-c(submission_id, n)) %>%
+  group_by(respond_type) %>%
+  summarize(respondents = n())
+
+respondents %>% 
+  kable(col.names = c("Respondent type", "Count"), escape = F, align = "c") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) #%>% 
+
+
+d2LogicResp2 <-  d2LogicResp %>%
+  filter(Region == "SHAPE") %>%
+  group_by(Region, logCon, respond_type) %>%
+  summarise(Mean = mean(RT), CILow = ci.low(RT), CIHigh = ci.high(RT)) %>%
+  mutate(YMin = Mean-CILow, YMax = Mean+CIHigh)
+
+p7 <- d2LogicResp2 %>%
+  ggplot(aes(Region, Mean, color = logCon, group = logCon, fill = logCon))
+
+pd <- position_dodge(width = 0.9)
+
+p7 +  geom_line(size = .8, linetype = "dashed", alpha = .6, position = pd) +
+  geom_errorbar(aes(ymin = YMin, ymax = YMax), width = .1, 
+                size = 1.1, alpha = .7, position = pd) +
+  geom_point(aes(shape = logCon), size = 3.5, color = "black", position = pd) +
+  facet_wrap( ~ respond_type) +
+  theme_minimal() +
+  theme(axis.title.x = element_text(face = "bold", size = 14, angle = 0, vjust = .5,
+                                    margin = margin(t = 0, r =0, b = 10, l = 0)), 
+        axis.title.y = element_text(face = "bold", size = 14, angle = 0, vjust = .5,
+                                    margin = margin(t = 0, r = 15, b = 0, l = 0)),
+        axis.text.x = element_blank(), 
+        legend.background = element_rect(size = .5, linetype = "solid"), 
+        strip.text.x = element_text(face = "bold", size = 14, angle = 0, vjust = .5,
+                                    margin = margin(t = 0, r = 0, b = 15, l = 0)),  
+        plot.title = element_text(hjust = 0.5), 
+        panel.grid.major.x = element_blank(), 
+        legend.position = "bottom") +
+  labs(y = "RTs", x = "SHAPE") +
+  scale_color_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5)) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5)) +
+  scale_shape_manual(values = c(21, 21, 21, 21, 22, 22, 22), 
+                     guide = guide_legend(title = "Condition", title.hjust = 0.5))
+
+# ggsave("RT_SHAPE_respond_shape.png", height = 4)
+
+```
