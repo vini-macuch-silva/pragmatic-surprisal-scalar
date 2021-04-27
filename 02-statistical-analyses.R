@@ -144,25 +144,53 @@ RT_SHAPE_trial = brm(log(RT) ~ logCon * trial_name +
 # Save output (model object)
 saveRDS(RT_SHAPE_trial, "RT_SHAPE_trial.RDS")
 
+# Run same model as above without log-transforming the RTs
+RT_SHAPE_trial_raw = brm(RT ~ logCon * trial_name +
+                                 (1 + logCon + trial_name | submission_id) +
+                                 (1 + trial_name | picture),
+                               iter = 4000,
+                               filter(d2Logic, Region == "SHAPE"))
+
+# Save output (model object)
+saveRDS(RT_SHAPE_trial_raw, "RT_SHAPE_trial_raw.RDS")
+
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions
 # and experimental block, no group-level effects
-RT_SHAPE_trial_fix_only = brm(log(RT) ~ logCon * trial_name,
+RT_SHAPE_trial_FE_only = brm(log(RT) ~ logCon * trial_name,
                      iter = 4000,
                      filter(d2Logic, Region == "SHAPE"))
 
 # Save output (model object)
-saveRDS(RT_SHAPE_trial_fix_only, "RT_SHAPE_trial_fix_only.RDS")
+saveRDS(RT_SHAPE_trial_FE_only, "RT_SHAPE_trial_FE_only.RDS")
+
+# Run same model as above without log-transforming the RTs
+RT_SHAPE_trial_FE_only_raw = brm(RT ~ logCon * trial_name,
+                              iter = 4000,
+                              filter(d2Logic, Region == "SHAPE"))
+
+# Save output (model object)
+saveRDS(RT_SHAPE_trial_FE_only_raw, "RT_SHAPE_trial_FE_only_raw.RDS")
 
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions
 # and experimental block, reduced group-level effects
-RT_SHAPE_trial_simpleRS = brm(log(RT) ~ logCon * trial_name +
+RT_SHAPE_trial_simpleRE = brm(log(RT) ~ logCon * trial_name +
                        (1 + logCon | submission_id) +
                        (1 | picture),
                      iter = 4000,
                      filter(d2Logic, Region == "SHAPE"))
 
 # Save output (model object)
-saveRDS(RT_SHAPE_trial_simpleRS, "RT_SHAPE_trial_simpleRS.RDS")
+saveRDS(RT_SHAPE_trial_simpleRE, "RT_SHAPE_trial_simpleRE.RDS")
+
+# Run same model as above without log-transforming the RTs
+RT_SHAPE_trial_simpleRE_raw = brm(RT ~ logCon * trial_name +
+                                (1 + logCon | submission_id) +
+                                (1 | picture),
+                              iter = 4000,
+                              filter(d2Logic, Region == "SHAPE"))
+
+# Save output (model object)
+saveRDS(RT_SHAPE_trial_simpleRE_raw, "RT_SHAPE_trial_simpleRE_raw.RDS")
 
 
 #############################################################
