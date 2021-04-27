@@ -142,6 +142,41 @@ d2Logic %>%
 
 ```
 
+Empirical means in numbers for relevant conditions and numerical effects for raw RTs:
+
+```{r}
+d2Logic %>% 
+  filter(Region == "SHAPE") %>% 
+  group_by(logCon, trial_name) %>% 
+  summarize(mean_RT = mean((RT))) %>% 
+  ungroup() %>% 
+  filter(str_detect(logCon, "iased")) %>% 
+  pivot_wider(id_cols = trial_name, names_from = logCon, values_from = mean_RT) %>% 
+  mutate(
+    effect_einige = `Einige (Unbiased)` - `Einige (Biased)`,
+    effect_alle   = `Alle (Unbiased)` - `Alle (Biased)`
+  ) 
+
+```
+
+Same for log-RTs:
+
+```{r}
+d2Logic %>% 
+  filter(Region == "SHAPE") %>% 
+  group_by(logCon, trial_name) %>% 
+  summarize(mean_RT = mean(log(RT))) %>% 
+  ungroup() %>% 
+  filter(str_detect(logCon, "iased")) %>% 
+  pivot_wider(id_cols = trial_name, names_from = logCon, values_from = mean_RT) %>% 
+  mutate(
+    effect_einige = `Einige (Unbiased)` - `Einige (Biased)`,
+    effect_alle   = `Alle (Unbiased)` - `Alle (Biased)`
+  )  
+
+```
+
+
 ### Models with full group-level effects
 
 ```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
@@ -162,15 +197,15 @@ m_fullRS_raw <- RT_SHAPE_trial_raw$RT_SHAPE_trial_fullRE_raw %>%
                `b_logConEinigeFalse:trial_nametask_three_2`, 
                `b_logConEinigeFalse:trial_nametask_three_3`,
                `b_logConEinigeFalse:trial_nametask_three_4`) %>%
-  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_2`,
-         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_3`,
-         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_4`,
-         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_2`,
-         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_3`,
-         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_4`,
-         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_2`,
-         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_3`,
-         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
+  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased +  b_trial_nametask_three_2 + `b_logConEinigeUnbiased:trial_nametask_three_2`,
+         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + b_trial_nametask_three_3 + `b_logConEinigeUnbiased:trial_nametask_three_3`,
+         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + b_trial_nametask_three_4 + `b_logConEinigeUnbiased:trial_nametask_three_4`,
+         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + b_trial_nametask_three_2 + `b_logConEinigeInfelict:trial_nametask_three_2`,
+         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + b_trial_nametask_three_3 + `b_logConEinigeInfelict:trial_nametask_three_3`,
+         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + b_trial_nametask_three_4 + `b_logConEinigeInfelict:trial_nametask_three_4`,
+         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + b_trial_nametask_three_2 + `b_logConEinigeFalse:trial_nametask_three_2`,
+         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + b_trial_nametask_three_3 + `b_logConEinigeFalse:trial_nametask_three_3`,
+         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + b_trial_nametask_three_4 + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
   gather_draws(b_trial_nametask_three_2,
                b_trial_nametask_three_3,
                b_trial_nametask_three_4,
@@ -207,15 +242,15 @@ m_fullRS_log <- RT_SHAPE_trial %>%
                `b_logConEinigeFalse:trial_nametask_three_2`, 
                `b_logConEinigeFalse:trial_nametask_three_3`,
                `b_logConEinigeFalse:trial_nametask_three_4`) %>%
-  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_2`,
-         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_3`,
-         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_4`,
-         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_2`,
-         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_3`,
-         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_4`,
-         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_2`,
-         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_3`,
-         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
+  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + b_trial_nametask_three_2 + `b_logConEinigeUnbiased:trial_nametask_three_2`,
+         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + b_trial_nametask_three_3 + `b_logConEinigeUnbiased:trial_nametask_three_3`,
+         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + b_trial_nametask_three_4 + `b_logConEinigeUnbiased:trial_nametask_three_4`,
+         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + b_trial_nametask_three_2 + `b_logConEinigeInfelict:trial_nametask_three_2`,
+         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + b_trial_nametask_three_3 + `b_logConEinigeInfelict:trial_nametask_three_3`,
+         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + b_trial_nametask_three_4 + `b_logConEinigeInfelict:trial_nametask_three_4`,
+         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + b_trial_nametask_three_2 + `b_logConEinigeFalse:trial_nametask_three_2`,
+         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + b_trial_nametask_three_3 + `b_logConEinigeFalse:trial_nametask_three_3`,
+         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + b_trial_nametask_three_3 + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
   gather_draws(b_trial_nametask_three_2,
                b_trial_nametask_three_3,
                b_trial_nametask_three_4,
@@ -241,6 +276,121 @@ ggarrange(m_fullRS_raw, m_fullRS_log)
 
 ```
 
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+m_fullRS_raw <- RT_SHAPE_trial_raw$RT_SHAPE_trial_fullRE_raw %>%
+  spread_draws(b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2`,
+               `b_logConAlleBiased:trial_nametask_three_3`,
+               `b_logConAlleBiased:trial_nametask_three_4`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2`,
+               `b_logConAlleUnbiased:trial_nametask_three_3`,
+               `b_logConAlleUnbiased:trial_nametask_three_4`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2`, 
+               `b_logConAlleFalse:trial_nametask_three_3`,
+               `b_logConAlleFalse:trial_nametask_three_4`) %>%
+  mutate(`b_logConAlleBiased:trial_nametask_three_2_new` = b_logConAlleBiased +  b_trial_nametask_three_2 + `b_logConAlleBiased:trial_nametask_three_2`,
+         `b_logConAlleBiased:trial_nametask_three_3_new` = b_logConAlleBiased + b_trial_nametask_three_3 + `b_logConAlleBiased:trial_nametask_three_3`,
+         `b_logConAlleBiased:trial_nametask_three_4_new` = b_logConAlleBiased + b_trial_nametask_three_4 + `b_logConAlleBiased:trial_nametask_three_4`,
+         `b_logConAlleUnbiased:trial_nametask_three_2_new` = b_logConAlleUnbiased +  b_trial_nametask_three_2 + `b_logConAlleUnbiased:trial_nametask_three_2`,
+         `b_logConAlleUnbiased:trial_nametask_three_3_new` = b_logConAlleUnbiased + b_trial_nametask_three_3 + `b_logConAlleUnbiased:trial_nametask_three_3`,
+         `b_logConAlleUnbiased:trial_nametask_three_4_new` = b_logConAlleUnbiased + b_trial_nametask_three_4 + `b_logConAlleUnbiased:trial_nametask_three_4`,
+         `b_logConAlleFalse:trial_nametask_three_2_new` = b_logConAlleFalse + b_trial_nametask_three_2 + `b_logConAlleFalse:trial_nametask_three_2`,
+         `b_logConAlleFalse:trial_nametask_three_3_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_3`,
+         `b_logConAlleFalse:trial_nametask_three_4_new` = b_logConAlleFalse + b_trial_nametask_three_4 + `b_logConAlleFalse:trial_nametask_three_4`) %>% 
+  gather_draws(b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2_new`,
+               `b_logConAlleBiased:trial_nametask_three_3_new`,
+               `b_logConAlleBiased:trial_nametask_three_4_new`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_3_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_4_new`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2_new`, 
+               `b_logConAlleFalse:trial_nametask_three_3_new`,
+               `b_logConAlleFalse:trial_nametask_three_4_new`) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
+  stat_halfeye(.width = c(.90, .95)) +
+  ggtitle("Raw RTs")
+
+m_fullRS_log <- RT_SHAPE_trial %>%
+  spread_draws(b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2`,
+               `b_logConAlleBiased:trial_nametask_three_3`,
+               `b_logConAlleBiased:trial_nametask_three_4`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2`,
+               `b_logConAlleUnbiased:trial_nametask_three_3`,
+               `b_logConAlleUnbiased:trial_nametask_three_4`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2`, 
+               `b_logConAlleFalse:trial_nametask_three_3`,
+               `b_logConAlleFalse:trial_nametask_three_4`) %>%
+  mutate(`b_logConAlleBiased:trial_nametask_three_2_new` = b_logConAlleBiased +  b_trial_nametask_three_2 + `b_logConAlleBiased:trial_nametask_three_2`,
+         `b_logConAlleBiased:trial_nametask_three_3_new` = b_logConAlleBiased + b_trial_nametask_three_3 + `b_logConAlleBiased:trial_nametask_three_3`,
+         `b_logConAlleBiased:trial_nametask_three_4_new` = b_logConAlleBiased + b_trial_nametask_three_4 + `b_logConAlleBiased:trial_nametask_three_4`,
+         `b_logConAlleUnbiased:trial_nametask_three_2_new` = b_logConAlleUnbiased + b_trial_nametask_three_2 + `b_logConAlleUnbiased:trial_nametask_three_2`,
+         `b_logConAlleUnbiased:trial_nametask_three_3_new` = b_logConAlleUnbiased + b_trial_nametask_three_3 + `b_logConAlleUnbiased:trial_nametask_three_3`,
+         `b_logConAlleUnbiased:trial_nametask_three_4_new` = b_logConAlleUnbiased + b_trial_nametask_three_4 + `b_logConAlleUnbiased:trial_nametask_three_4`,
+         `b_logConAlleFalse:trial_nametask_three_2_new` = b_logConAlleFalse + b_trial_nametask_three_2 + `b_logConAlleFalse:trial_nametask_three_2`,
+         `b_logConAlleFalse:trial_nametask_three_3_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_3`,
+         `b_logConAlleFalse:trial_nametask_three_4_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_4`) %>% 
+  gather_draws(b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2_new`,
+               `b_logConAlleBiased:trial_nametask_three_3_new`,
+               `b_logConAlleBiased:trial_nametask_three_4_new`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_3_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_4_new`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2_new`, 
+               `b_logConAlleFalse:trial_nametask_three_3_new`,
+               `b_logConAlleFalse:trial_nametask_three_4_new`) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
+  scale_y_discrete(position = "right") +
+  stat_halfeye(.width = c(.90, .95)) +
+  ggtitle("log(RTs)")
+
+ggarrange(m_fullRS_raw, m_fullRS_log)
+
+```
+
+### Hypothesis tests for full group-level models
+
+```{r}
+# effect 'einige' block 1
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased > Intercept")
+# effect 'einige' block 2
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_2 + logConEinigeUnbiased:trial_nametask_three_2 > Intercept + trial_nametask_three_2 ")
+# effect 'einige' block 3
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_3 + logConEinigeUnbiased:trial_nametask_three_3 > Intercept + trial_nametask_three_3 ")
+# effect 'einige' block 4
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_4 + logConEinigeUnbiased:trial_nametask_three_4 > Intercept + trial_nametask_three_4")
+
+
+# effect 'alle' block 1
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased > Intercept + logConAlleBiased")
+# effect 'alle' block 2
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_2 + logConAlleUnbiased:trial_nametask_three_2 > Intercept + logConAlleBiased + trial_nametask_three_2 + logConAlleBiased:trial_nametask_three_2")
+# effect 'alle' block 3
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_3 + logConAlleUnbiased:trial_nametask_three_3 > Intercept + logConAlleBiased + trial_nametask_three_3 + logConAlleBiased:trial_nametask_three_3")
+# effect 'alle' block 4
+brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_4 + logConAlleUnbiased:trial_nametask_three_4 > Intercept + logConAlleBiased + trial_nametask_three_4 + logConAlleBiased:trial_nametask_three_4")
+```
+
+
 ### Models with reduced group-level effects
 
 ```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
@@ -261,15 +411,15 @@ m_simpleRS_raw <- RT_SHAPE_trial_simpleRS_raw$RT_SHAPE_trial_simpleRE_raw %>%
                `b_logConEinigeFalse:trial_nametask_three_2`, 
                `b_logConEinigeFalse:trial_nametask_three_3`,
                `b_logConEinigeFalse:trial_nametask_three_4`) %>%
-  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_2`,
-         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_3`,
-         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_4`,
-         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_2`,
-         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_3`,
-         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_4`,
-         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_2`,
-         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_3`,
-         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
+  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + b_trial_nametask_three_2 + `b_logConEinigeUnbiased:trial_nametask_three_2`,
+         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + b_trial_nametask_three_3 + `b_logConEinigeUnbiased:trial_nametask_three_3`,
+         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + b_trial_nametask_three_4 + `b_logConEinigeUnbiased:trial_nametask_three_4`,
+         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + b_trial_nametask_three_2 + `b_logConEinigeInfelict:trial_nametask_three_2`,
+         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + b_trial_nametask_three_3 + `b_logConEinigeInfelict:trial_nametask_three_3`,
+         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + b_trial_nametask_three_4 + `b_logConEinigeInfelict:trial_nametask_three_4`,
+         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + b_trial_nametask_three_2 + `b_logConEinigeFalse:trial_nametask_three_2`,
+         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + b_trial_nametask_three_3 + `b_logConEinigeFalse:trial_nametask_three_3`,
+         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + b_trial_nametask_three_4 + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
   gather_draws(b_trial_nametask_three_2,
                b_trial_nametask_three_3,
                b_trial_nametask_three_4,
@@ -306,15 +456,15 @@ m_simpleRS_log <- RT_SHAPE_trial_simpleRS %>%
                `b_logConEinigeFalse:trial_nametask_three_2`, 
                `b_logConEinigeFalse:trial_nametask_three_3`,
                `b_logConEinigeFalse:trial_nametask_three_4`) %>%
-  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_2`,
-         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_3`,
-         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_4`,
-         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_2`,
-         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_3`,
-         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_4`,
-         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_2`,
-         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_3`,
-         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
+  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + b_trial_nametask_three_2 + `b_logConEinigeUnbiased:trial_nametask_three_2`,
+         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + b_trial_nametask_three_3 + `b_logConEinigeUnbiased:trial_nametask_three_3`,
+         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + b_trial_nametask_three_4 + `b_logConEinigeUnbiased:trial_nametask_three_4`,
+         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + b_trial_nametask_three_2 + `b_logConEinigeInfelict:trial_nametask_three_2`,
+         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + b_trial_nametask_three_3 + `b_logConEinigeInfelict:trial_nametask_three_3`,
+         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + b_trial_nametask_three_4 + `b_logConEinigeInfelict:trial_nametask_three_4`,
+         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + b_trial_nametask_three_2 + `b_logConEinigeFalse:trial_nametask_three_2`,
+         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + b_trial_nametask_three_3 + `b_logConEinigeFalse:trial_nametask_three_3`,
+         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + b_trial_nametask_three_4 + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
   gather_draws(b_trial_nametask_three_2,
                b_trial_nametask_three_3,
                b_trial_nametask_three_4,
@@ -340,6 +490,98 @@ ggarrange(m_simpleRS_raw, m_simpleRS_log)
 
 ```
 
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+m_simpleRS_raw <- RT_SHAPE_trial_simpleRS_raw$RT_SHAPE_trial_simpleRE_raw %>%
+  spread_draws(b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2`,
+               `b_logConAlleBiased:trial_nametask_three_3`,
+               `b_logConAlleBiased:trial_nametask_three_4`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2`,
+               `b_logConAlleUnbiased:trial_nametask_three_3`,
+               `b_logConAlleUnbiased:trial_nametask_three_4`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2`, 
+               `b_logConAlleFalse:trial_nametask_three_3`,
+               `b_logConAlleFalse:trial_nametask_three_4`) %>%
+  mutate(`b_logConAlleBiased:trial_nametask_three_2_new` = b_logConAlleBiased +  b_trial_nametask_three_2 + `b_logConAlleBiased:trial_nametask_three_2`,
+         `b_logConAlleBiased:trial_nametask_three_3_new` = b_logConAlleBiased + b_trial_nametask_three_3 + `b_logConAlleBiased:trial_nametask_three_3`,
+         `b_logConAlleBiased:trial_nametask_three_4_new` = b_logConAlleBiased + b_trial_nametask_three_4 + `b_logConAlleBiased:trial_nametask_three_4`,
+         `b_logConAlleUnbiased:trial_nametask_three_2_new` = b_logConAlleUnbiased +  b_trial_nametask_three_2 + `b_logConAlleUnbiased:trial_nametask_three_2`,
+         `b_logConAlleUnbiased:trial_nametask_three_3_new` = b_logConAlleUnbiased + b_trial_nametask_three_3 + `b_logConAlleUnbiased:trial_nametask_three_3`,
+         `b_logConAlleUnbiased:trial_nametask_three_4_new` = b_logConAlleUnbiased + b_trial_nametask_three_4 + `b_logConAlleUnbiased:trial_nametask_three_4`,
+         `b_logConAlleFalse:trial_nametask_three_2_new` = b_logConAlleFalse + b_trial_nametask_three_2 + `b_logConAlleFalse:trial_nametask_three_2`,
+         `b_logConAlleFalse:trial_nametask_three_3_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_3`,
+         `b_logConAlleFalse:trial_nametask_three_4_new` = b_logConAlleFalse + b_trial_nametask_three_4 + `b_logConAlleFalse:trial_nametask_three_4`) %>% 
+  gather_draws(b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2_new`,
+               `b_logConAlleBiased:trial_nametask_three_3_new`,
+               `b_logConAlleBiased:trial_nametask_three_4_new`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_3_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_4_new`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2_new`, 
+               `b_logConAlleFalse:trial_nametask_three_3_new`,
+               `b_logConAlleFalse:trial_nametask_three_4_new`) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
+  stat_halfeye(.width = c(.90, .95)) +
+  ggtitle("Raw RTs")
+
+m_simpleRS_log <- RT_SHAPE_trial_simpleRS %>%
+  spread_draws(b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2`,
+               `b_logConAlleBiased:trial_nametask_three_3`,
+               `b_logConAlleBiased:trial_nametask_three_4`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2`,
+               `b_logConAlleUnbiased:trial_nametask_three_3`,
+               `b_logConAlleUnbiased:trial_nametask_three_4`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2`, 
+               `b_logConAlleFalse:trial_nametask_three_3`,
+               `b_logConAlleFalse:trial_nametask_three_4`) %>%
+  mutate(`b_logConAlleBiased:trial_nametask_three_2_new` = b_logConAlleBiased + b_trial_nametask_three_2 + `b_logConAlleBiased:trial_nametask_three_2`,
+         `b_logConAlleBiased:trial_nametask_three_3_new` = b_logConAlleBiased + b_trial_nametask_three_3 + `b_logConAlleBiased:trial_nametask_three_3`,
+         `b_logConAlleBiased:trial_nametask_three_4_new` = b_logConAlleBiased + b_trial_nametask_three_4 + `b_logConAlleBiased:trial_nametask_three_4`,
+         `b_logConAlleUnbiased:trial_nametask_three_2_new` = b_logConAlleUnbiased + b_trial_nametask_three_2 + `b_logConAlleUnbiased:trial_nametask_three_2`,
+         `b_logConAlleUnbiased:trial_nametask_three_3_new` = b_logConAlleUnbiased + b_trial_nametask_three_3 + `b_logConAlleUnbiased:trial_nametask_three_3`,
+         `b_logConAlleUnbiased:trial_nametask_three_4_new` = b_logConAlleUnbiased + b_trial_nametask_three_4 + `b_logConAlleUnbiased:trial_nametask_three_4`,
+         `b_logConAlleFalse:trial_nametask_three_2_new` = b_logConAlleFalse + b_trial_nametask_three_2 + `b_logConAlleFalse:trial_nametask_three_2`,
+         `b_logConAlleFalse:trial_nametask_three_3_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_3`,
+         `b_logConAlleFalse:trial_nametask_three_4_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_4`) %>% 
+  gather_draws(b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2_new`, 
+               `b_logConAlleBiased:trial_nametask_three_3_new`,
+               `b_logConAlleBiased:trial_nametask_three_4_new`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_3_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_4_new`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2_new`, 
+               `b_logConAlleFalse:trial_nametask_three_3_new`,
+               `b_logConAlleFalse:trial_nametask_three_4_new`) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
+  scale_y_discrete(position = "right") +
+  stat_halfeye(.width = c(.90, .95)) +
+  ggtitle("log(RTs)")
+
+ggarrange(m_simpleRS_raw, m_simpleRS_log)
+
+```
+
 ### Models without group-level effects
 
 ```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
@@ -360,15 +602,15 @@ m_FS_only_raw <- RT_SHAPE_trial_fix_only_raw$RT_SHAPE_trial_FE_raw %>%
                `b_logConEinigeFalse:trial_nametask_three_2`, 
                `b_logConEinigeFalse:trial_nametask_three_3`,
                `b_logConEinigeFalse:trial_nametask_three_4`) %>%
-  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_2`,
-         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_3`,
-         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_4`,
-         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_2`,
-         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_3`,
-         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_4`,
-         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_2`,
-         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_3`,
-         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
+  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + b_trial_nametask_three_2 + `b_logConEinigeUnbiased:trial_nametask_three_2`,
+         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + b_trial_nametask_three_3 + `b_logConEinigeUnbiased:trial_nametask_three_3`,
+         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + b_trial_nametask_three_4 + `b_logConEinigeUnbiased:trial_nametask_three_4`,
+         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + b_trial_nametask_three_2 + `b_logConEinigeInfelict:trial_nametask_three_2`,
+         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + b_trial_nametask_three_3 + `b_logConEinigeInfelict:trial_nametask_three_3`,
+         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + b_trial_nametask_three_4 + `b_logConEinigeInfelict:trial_nametask_three_4`,
+         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + b_trial_nametask_three_2 + `b_logConEinigeFalse:trial_nametask_three_2`,
+         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + b_trial_nametask_three_3 + `b_logConEinigeFalse:trial_nametask_three_3`,
+         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + b_trial_nametask_three_4 + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
   gather_draws(b_trial_nametask_three_2,
                b_trial_nametask_three_3,
                b_trial_nametask_three_4,
@@ -385,6 +627,7 @@ m_FS_only_raw <- RT_SHAPE_trial_fix_only_raw$RT_SHAPE_trial_FE_raw %>%
                `b_logConEinigeFalse:trial_nametask_three_3_new`,
                `b_logConEinigeFalse:trial_nametask_three_4_new`) %>% 
   ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
   stat_halfeye(.width = c(.90, .95)) +
   ggtitle("Raw RTs")
   
@@ -404,15 +647,15 @@ m_FS_only_log <- RT_SHAPE_trial_fix_only %>%
                `b_logConEinigeFalse:trial_nametask_three_2`, 
                `b_logConEinigeFalse:trial_nametask_three_3`,
                `b_logConEinigeFalse:trial_nametask_three_4`) %>%
-  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_2`,
-         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_3`,
-         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + `b_logConEinigeUnbiased:trial_nametask_three_4`,
-         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_2`,
-         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_3`,
-         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + `b_logConEinigeInfelict:trial_nametask_three_4`,
-         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_2`,
-         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_3`,
-         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
+  mutate(`b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_logConEinigeUnbiased + b_trial_nametask_three_2 + `b_logConEinigeUnbiased:trial_nametask_three_2`,
+         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_logConEinigeUnbiased + b_trial_nametask_three_3 + `b_logConEinigeUnbiased:trial_nametask_three_3`,
+         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_logConEinigeUnbiased + b_trial_nametask_three_4 + `b_logConEinigeUnbiased:trial_nametask_three_4`,
+         `b_logConEinigeInfelict:trial_nametask_three_2_new` = b_logConEinigeInfelict + b_trial_nametask_three_2 + `b_logConEinigeInfelict:trial_nametask_three_2`,
+         `b_logConEinigeInfelict:trial_nametask_three_3_new` = b_logConEinigeInfelict + b_trial_nametask_three_3 + `b_logConEinigeInfelict:trial_nametask_three_3`,
+         `b_logConEinigeInfelict:trial_nametask_three_4_new` = b_logConEinigeInfelict + b_trial_nametask_three_4 + `b_logConEinigeInfelict:trial_nametask_three_4`,
+         `b_logConEinigeFalse:trial_nametask_three_2_new` = b_logConEinigeFalse + b_trial_nametask_three_2 + `b_logConEinigeFalse:trial_nametask_three_2`,
+         `b_logConEinigeFalse:trial_nametask_three_3_new` = b_logConEinigeFalse + b_trial_nametask_three_3 + `b_logConEinigeFalse:trial_nametask_three_3`,
+         `b_logConEinigeFalse:trial_nametask_three_4_new` = b_logConEinigeFalse + b_trial_nametask_three_4 + `b_logConEinigeFalse:trial_nametask_three_4`) %>% 
   gather_draws(b_trial_nametask_three_2,
                b_trial_nametask_three_3,
                b_trial_nametask_three_4,
@@ -429,6 +672,7 @@ m_FS_only_log <- RT_SHAPE_trial_fix_only %>%
                `b_logConEinigeFalse:trial_nametask_three_3_new`,
                `b_logConEinigeFalse:trial_nametask_three_4_new`) %>% 
   ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
   scale_y_discrete(position = "right") +
   stat_halfeye(.width = c(.90, .95)) +
   ggtitle("log(RTs)")
@@ -436,3 +680,95 @@ m_FS_only_log <- RT_SHAPE_trial_fix_only %>%
 ggarrange(m_FS_only_raw, m_FS_only_log)
 
 ```
+
+```{r fig.align='center', fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+m_FS_only_raw <- RT_SHAPE_trial_fix_only_raw$RT_SHAPE_trial_FE_raw %>%
+  spread_draws(b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2`,
+               `b_logConAlleBiased:trial_nametask_three_3`,
+               `b_logConAlleBiased:trial_nametask_three_4`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2`,
+               `b_logConAlleUnbiased:trial_nametask_three_3`,
+               `b_logConAlleUnbiased:trial_nametask_three_4`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2`, 
+               `b_logConAlleFalse:trial_nametask_three_3`,
+               `b_logConAlleFalse:trial_nametask_three_4`) %>%
+  mutate(`b_logConAlleBiased:trial_nametask_three_2_new` = b_logConAlleBiased +  b_trial_nametask_three_2 + `b_logConAlleBiased:trial_nametask_three_2`,
+         `b_logConAlleBiased:trial_nametask_three_3_new` = b_logConAlleBiased + b_trial_nametask_three_3 + `b_logConAlleBiased:trial_nametask_three_3`,
+         `b_logConAlleBiased:trial_nametask_three_4_new` = b_logConAlleBiased + b_trial_nametask_three_4 + `b_logConAlleBiased:trial_nametask_three_4`,
+         `b_logConAlleUnbiased:trial_nametask_three_2_new` = b_logConAlleUnbiased +  b_trial_nametask_three_2 + `b_logConAlleUnbiased:trial_nametask_three_2`,
+         `b_logConAlleUnbiased:trial_nametask_three_3_new` = b_logConAlleUnbiased + b_trial_nametask_three_3 + `b_logConAlleUnbiased:trial_nametask_three_3`,
+         `b_logConAlleUnbiased:trial_nametask_three_4_new` = b_logConAlleUnbiased + b_trial_nametask_three_4 + `b_logConAlleUnbiased:trial_nametask_three_4`,
+         `b_logConAlleFalse:trial_nametask_three_2_new` = b_logConAlleFalse + b_trial_nametask_three_2 + `b_logConAlleFalse:trial_nametask_three_2`,
+         `b_logConAlleFalse:trial_nametask_three_3_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_3`,
+         `b_logConAlleFalse:trial_nametask_three_4_new` = b_logConAlleFalse + b_trial_nametask_three_4 + `b_logConAlleFalse:trial_nametask_three_4`) %>% 
+  gather_draws(b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2_new`,
+               `b_logConAlleBiased:trial_nametask_three_3_new`,
+               `b_logConAlleBiased:trial_nametask_three_4_new`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_3_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_4_new`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2_new`, 
+               `b_logConAlleFalse:trial_nametask_three_3_new`,
+               `b_logConAlleFalse:trial_nametask_three_4_new`) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
+  stat_halfeye(.width = c(.90, .95)) +
+  ggtitle("Raw RTs")
+
+m_FS_only_log <- RT_SHAPE_trial_fix_only %>%
+  spread_draws(b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2`, 
+               `b_logConAlleBiased:trial_nametask_three_3`,
+               `b_logConAlleBiased:trial_nametask_three_4`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2`,
+               `b_logConAlleUnbiased:trial_nametask_three_3`,
+               `b_logConAlleUnbiased:trial_nametask_three_4`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2`, 
+               `b_logConAlleFalse:trial_nametask_three_3`,
+               `b_logConAlleFalse:trial_nametask_three_4`) %>%
+  mutate(`b_logConAlleBiased:trial_nametask_three_2_new` = b_logConAlleBiased + b_trial_nametask_three_2 + `b_logConAlleBiased:trial_nametask_three_2`,
+         `b_logConAlleBiased:trial_nametask_three_3_new` = b_logConAlleBiased + b_trial_nametask_three_3 + `b_logConAlleBiased:trial_nametask_three_3`,
+         `b_logConAlleBiased:trial_nametask_three_4_new` = b_logConAlleBiased + b_trial_nametask_three_4 + `b_logConAlleBiased:trial_nametask_three_4`,
+         `b_logConAlleUnbiased:trial_nametask_three_2_new` = b_logConAlleUnbiased + b_trial_nametask_three_2 + `b_logConAlleUnbiased:trial_nametask_three_2`,
+         `b_logConAlleUnbiased:trial_nametask_three_3_new` = b_logConAlleUnbiased + b_trial_nametask_three_3 + `b_logConAlleUnbiased:trial_nametask_three_3`,
+         `b_logConAlleUnbiased:trial_nametask_three_4_new` = b_logConAlleUnbiased + b_trial_nametask_three_4 + `b_logConAlleUnbiased:trial_nametask_three_4`,
+         `b_logConAlleFalse:trial_nametask_three_2_new` = b_logConAlleFalse + b_trial_nametask_three_2 + `b_logConAlleFalse:trial_nametask_three_2`,
+         `b_logConAlleFalse:trial_nametask_three_3_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_3`,
+         `b_logConAlleFalse:trial_nametask_three_4_new` = b_logConAlleFalse + b_trial_nametask_three_3 + `b_logConAlleFalse:trial_nametask_three_4`) %>% 
+  gather_draws(b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2_new`, 
+               `b_logConAlleBiased:trial_nametask_three_3_new`,
+               `b_logConAlleBiased:trial_nametask_three_4_new`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_3_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_4_new`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:trial_nametask_three_2_new`, 
+               `b_logConAlleFalse:trial_nametask_three_3_new`,
+               `b_logConAlleFalse:trial_nametask_three_4_new`) %>% 
+  ggplot(aes(y = .variable, x = .value)) +
+  geom_vline(xintercept = c(0), linetype = "dashed") +
+  scale_y_discrete(position = "right") +
+  stat_halfeye(.width = c(.90, .95)) +
+  ggtitle("log(RTs)")
+
+ggarrange(m_FS_only_raw, m_FS_only_log)
+
+```
+
