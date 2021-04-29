@@ -4,6 +4,7 @@ library(fields)
 library(factoextra)
 library(brms)
 library(bayesplot)
+library(tidybayes)
 options(mc.cores = parallel::detectCores ())
 
 # For bootstrapping 95% confidence intervals
@@ -113,25 +114,25 @@ d2Logic$trial_name <- as.factor(d2Logic$trial_name)
 # table(d2Logic$logCon, d2Logic$critical)
 
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions 
-# RT_SHAPE = brm(log(RT) ~ logCon +
-#                           (1 + logCon | submission_id) +  
-#                           (1 | picture),
-#                         iter = 4000,
-#                         filter(d2Logic, Region == "SHAPE"))
-  
+RT_SHAPE = brm(log(RT) ~ logCon +
+                          (1 + logCon | submission_id) +
+                          (1 | picture),
+                        iter = 4000,
+                        filter(d2Logic, Region == "SHAPE"))
+
 # Save output (model object)
-# saveRDS(RT_SHAPE, "RT_SHAPE.RDS")
+saveRDS(RT_SHAPE, "RT_SHAPE.RDS")
 
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions 
 # and shape term
-# RT_SHAPE_crit = brm(log(RT) ~ logCon * critical +
-#                        (1 + logCon * critical | submission_id) +
-#                        (1 | picture),
-#                      iter = 4000,
-#                      filter(d2Logic, Region == "SHAPE"))
+RT_SHAPE_crit = brm(log(RT) ~ logCon * critical +
+                       (1 + logCon * critical | submission_id) +
+                       (1 | picture),
+                     iter = 4000,
+                     filter(d2Logic, Region == "SHAPE"))
 
 # Save output (model object)
-# saveRDS(RT_SHAPE_crit, "RT_SHAPE_crit.RDS")
+saveRDS(RT_SHAPE_crit, "RT_SHAPE_crit.RDS")
 
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions
 # and experimental block, full group-level effects
@@ -144,90 +145,25 @@ RT_SHAPE_trial = brm(log(RT) ~ logCon * trial_name +
 # Save output (model object)
 saveRDS(RT_SHAPE_trial, "RT_SHAPE_trial.RDS")
 
-# Run same model as above without log-transforming the RTs
-RT_SHAPE_trial_raw = brm(RT ~ logCon * trial_name +
-                                 (1 + logCon + trial_name | submission_id) +
-                                 (1 + trial_name | picture),
-                               iter = 4000,
-                               filter(d2Logic, Region == "SHAPE"))
-
-# Save output (model object)
-saveRDS(RT_SHAPE_trial_raw, "RT_SHAPE_trial_raw.RDS")
-
-# Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions
-# and experimental block, no group-level effects
-RT_SHAPE_trial_FE_only = brm(log(RT) ~ logCon * trial_name,
-                     iter = 4000,
-                     filter(d2Logic, Region == "SHAPE"))
-
-# Save output (model object)
-saveRDS(RT_SHAPE_trial_FE_only, "RT_SHAPE_trial_FE_only.RDS")
-
-# Run same model as above without log-transforming the RTs
-RT_SHAPE_trial_FE_only_raw = brm(RT ~ logCon * trial_name,
-                              iter = 4000,
-                              filter(d2Logic, Region == "SHAPE"))
-
-# Save output (model object)
-saveRDS(RT_SHAPE_trial_FE_only_raw, "RT_SHAPE_trial_FE_only_raw.RDS")
-
-# Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions
-# and experimental block, reduced group-level effects
-RT_SHAPE_trial_simpleRE = brm(log(RT) ~ logCon * trial_name +
-                       (1 + logCon | submission_id) +
-                       (1 | picture),
-                     iter = 4000,
-                     filter(d2Logic, Region == "SHAPE"))
-
-# Save output (model object)
-saveRDS(RT_SHAPE_trial_simpleRE, "RT_SHAPE_trial_simpleRE.RDS")
-
-# Run same model as above without log-transforming the RTs
-RT_SHAPE_trial_simpleRE_raw = brm(RT ~ logCon * trial_name +
-                                (1 + logCon | submission_id) +
-                                (1 | picture),
-                              iter = 4000,
-                              filter(d2Logic, Region == "SHAPE"))
-
-# Save output (model object)
-saveRDS(RT_SHAPE_trial_simpleRE_raw, "RT_SHAPE_trial_simpleRE_raw.RDS")
-
-
-#############################################################
-########                                               ######
-########  FROM HERE ON NOT RELEVANT FOR YOUR CHECK-UP  ######
-########                                               ######
-#############################################################
-
-
-# Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions, 
-# shape term, and experimental block
-# RT_SHAPE_crit_trial = brm(log(RT) ~ logCon * critical * trial_name +
-#                        (1 + logCon + critical + trial_name | submission_id) +
-#                        (1 + trial_name | picture),
-#                      iter = 4000,
-#                      filter(d2Logic, Region == "SHAPE"))
-
-# Save output (model object)
-# saveRDS(RT_SHAPE_crit_trial, "RT_SHAPE_crit_trial.RDS")
-
-# Load model object
-RT_SHAPE <- readRDS("RT_SHAPE.RDS")
-
-# Extract summary of samples
-# Show probabilities of relevant comparisons
-samples_summary_SHAPE <-  posterior_samples(RT_SHAPE) %>%
-summarize(ProbabilityEinigeBiasedFasterEinigeUnbiased = sum((b_logConEinigeUnbiased > 0)) / n(),
-          ProbabilityEinigeBiasedFasterEinigeInfelict = sum((b_logConEinigeInfelict > 0)) / n(),
-          ProbabilityEinigeBiasedFasterEinigeFalse = sum((b_logConEinigeFalse > 0)) / n(),
-          ProbabilityAlleBiasedFasterAlleUnbiased = sum((b_logConAlleUnbiased > b_logConAlleBiased)) / n(),
-          ProbabilityAlleBiasedFasterAlleFalse = sum((b_logConAlleFalse > b_logConAlleBiased)) / n() ) %>%
-  gather(key = "Hypothesis", value = "Probability") %>%
-  mutate(Hypothesis = recode(Hypothesis, "ProbabilityEinigeBiasedFasterEinigeUnbiased" = "[einige] Unbiased > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeInfelict" = "[einige] Infelict > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeFalse" = "[einige] False > Biased",
-                             "ProbabilityAlleBiasedFasterAlleUnbiased" = "[alle] Unbiased > Biased",
-                             "ProbabilityAlleBiasedFasterAlleFalse" = "[alle] False > Biased"))
+# # Load model objects
+# RT_SHAPE <- readRDS("RT_SHAPE.RDS")
+# RT_SHAPE_crit <- readRDS("RT_SHAPE_crit.RDS")
+# RT_SHAPE_trial <- readRDS("RT_SHAPE_trial.RDS")
+ 
+# # Extract summary of samples
+# # Show probabilities of relevant comparisons
+# samples_summary_SHAPE <-  posterior_samples(RT_SHAPE) %>%
+# summarize(ProbabilityEinigeBiasedFasterEinigeUnbiased = sum((b_logConEinigeUnbiased > 0)) / n(),
+#           ProbabilityEinigeBiasedFasterEinigeInfelict = sum((b_logConEinigeInfelict > 0)) / n(),
+#           ProbabilityEinigeBiasedFasterEinigeFalse = sum((b_logConEinigeFalse > 0)) / n(),
+#           ProbabilityAlleBiasedFasterAlleUnbiased = sum((b_logConAlleUnbiased > b_logConAlleBiased)) / n(),
+#           ProbabilityAlleBiasedFasterAlleFalse = sum((b_logConAlleFalse > b_logConAlleBiased)) / n() ) %>%
+#   gather(key = "Hypothesis", value = "Probability") %>%
+#   mutate(Hypothesis = recode(Hypothesis, "ProbabilityEinigeBiasedFasterEinigeUnbiased" = "[einige] Unbiased > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeInfelict" = "[einige] Infelict > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeFalse" = "[einige] False > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleUnbiased" = "[alle] Unbiased > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleFalse" = "[alle] False > Biased"))
 
 # Produce clean model summary (model estimates, credibility interval)
 RT_SHAPE_tidy <- broom.mixed::tidy(RT_SHAPE)
@@ -236,6 +172,167 @@ RT_SHAPE_tidy <- broom.mixed::tidy(RT_SHAPE)
 RT_SHAPE_tidy2 <- filter(RT_SHAPE_tidy, effect == "fixed") %>% 
   select(-effect, -component, -group, -std.error) %>% 
   mutate_if(is.numeric, ~ round(., 2))
+
+
+m_trial_einige <- RT_SHAPE_trial %>%
+  spread_draws(b_Intercept,
+               b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConEinigeUnbiased,
+               `b_logConEinigeUnbiased:trial_nametask_three_2`,
+               `b_logConEinigeUnbiased:trial_nametask_three_3`,
+               `b_logConEinigeUnbiased:trial_nametask_three_4`) %>%
+  mutate(b_trial_nametask_three_2_new = b_Intercept + b_trial_nametask_three_2,
+         b_trial_nametask_three_3_new = b_Intercept + b_trial_nametask_three_3,
+         b_trial_nametask_three_4_new = b_Intercept + b_trial_nametask_three_4,
+         b_logConEinigeUnbiased_new = b_Intercept + b_logConEinigeUnbiased,
+         `b_logConEinigeUnbiased:trial_nametask_three_2_new` = b_Intercept + b_logConEinigeUnbiased + 
+           b_trial_nametask_three_2 + `b_logConEinigeUnbiased:trial_nametask_three_2`,
+         `b_logConEinigeUnbiased:trial_nametask_three_3_new` = b_Intercept + b_logConEinigeUnbiased + 
+           b_trial_nametask_three_3 + `b_logConEinigeUnbiased:trial_nametask_three_3`,
+         `b_logConEinigeUnbiased:trial_nametask_three_4_new` = b_Intercept + b_logConEinigeUnbiased + 
+           b_trial_nametask_three_4 + `b_logConEinigeUnbiased:trial_nametask_three_4`) %>%
+  gather_draws(b_Intercept,
+               b_trial_nametask_three_2_new,
+               b_trial_nametask_three_3_new,
+               b_trial_nametask_three_4_new,
+               b_logConEinigeUnbiased_new,
+               `b_logConEinigeUnbiased:trial_nametask_three_2_new`,
+               `b_logConEinigeUnbiased:trial_nametask_three_3_new`,
+               `b_logConEinigeUnbiased:trial_nametask_three_4_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+                            levels = c("b_Intercept",
+                                       "b_logConEinigeUnbiased_new",
+                                       "b_trial_nametask_three_2_new",
+                                       "b_logConEinigeUnbiased:trial_nametask_three_2_new",
+                                       "b_trial_nametask_three_3_new",
+                                       "b_logConEinigeUnbiased:trial_nametask_three_3_new",
+                                       "b_trial_nametask_three_4_new",
+                                       "b_logConEinigeUnbiased:trial_nametask_three_4_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+scale_y_discrete(labels = c('Trial 1-21',
+                            'Trial 1-21',
+                            'Trial 22-42',
+                            'Trial 22-42',
+                            'Trial 43-64',
+                            'Trial 43-64',
+                            'Trial 64-84',
+                            'Trial 64-84')) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331"), 
+                                 each = 1, times = 4),
+                    breaks = c("b_Intercept",
+                               "b_logConEinigeUnbiased_new",
+                               "b_logConEinigeFalse_new",
+                               "b_logConEinigeInfelict_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False",
+                               "Infelicitous")) +
+  ggtitle("Einige")
+
+m_trial_alle <- RT_SHAPE_trial %>%
+  spread_draws(b_Intercept,
+               b_trial_nametask_three_2,
+               b_trial_nametask_three_3,
+               b_trial_nametask_three_4,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:trial_nametask_three_2`,
+               `b_logConAlleBiased:trial_nametask_three_3`,
+               `b_logConAlleBiased:trial_nametask_three_4`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:trial_nametask_three_2`,
+               `b_logConAlleUnbiased:trial_nametask_three_3`,
+               `b_logConAlleUnbiased:trial_nametask_three_4`) %>%
+  mutate(b_logConAlleBiased_new = b_Intercept + b_logConAlleBiased,
+         `b_logConAlleBiased:trial_nametask_three_2_new` = b_Intercept + b_logConAlleBiased + 
+           b_trial_nametask_three_2 + `b_logConAlleBiased:trial_nametask_three_2`,
+         `b_logConAlleBiased:trial_nametask_three_3_new` = b_Intercept + b_logConAlleBiased + 
+           b_trial_nametask_three_3 + `b_logConAlleBiased:trial_nametask_three_3`,
+         `b_logConAlleBiased:trial_nametask_three_4_new` = b_Intercept + b_logConAlleBiased + 
+           b_trial_nametask_three_4 + `b_logConAlleBiased:trial_nametask_three_4`,
+         b_logConAlleUnbiased_new = b_Intercept + b_logConAlleUnbiased,
+         `b_logConAlleUnbiased:trial_nametask_three_2_new` = b_Intercept + b_logConAlleUnbiased + 
+           b_trial_nametask_three_2 + `b_logConAlleUnbiased:trial_nametask_three_2`,
+         `b_logConAlleUnbiased:trial_nametask_three_3_new` = b_Intercept + b_logConAlleUnbiased + 
+           b_trial_nametask_three_3 + `b_logConAlleUnbiased:trial_nametask_three_3`,
+         `b_logConAlleUnbiased:trial_nametask_three_4_new` = b_Intercept + b_logConAlleUnbiased + 
+           b_trial_nametask_three_4 + `b_logConAlleUnbiased:trial_nametask_three_4`) %>%
+  gather_draws(b_logConAlleBiased_new,
+               `b_logConAlleBiased:trial_nametask_three_2_new`,
+               `b_logConAlleBiased:trial_nametask_three_3_new`,
+               `b_logConAlleBiased:trial_nametask_three_4_new`,
+               b_logConAlleUnbiased_new,
+               `b_logConAlleUnbiased:trial_nametask_three_2_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_3_new`,
+               `b_logConAlleUnbiased:trial_nametask_three_4_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+                            levels = c("b_logConAlleBiased_new",
+                                       "b_logConAlleUnbiased_new",
+                                       "b_logConAlleBiased:trial_nametask_three_2_new",
+                                       "b_logConAlleUnbiased:trial_nametask_three_2_new",
+                                       "b_logConAlleBiased:trial_nametask_three_3_new",
+                                       "b_logConAlleUnbiased:trial_nametask_three_3_new",
+                                       "b_logConAlleBiased:trial_nametask_three_4_new",
+                                       "b_logConAlleUnbiased:trial_nametask_three_4_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  scale_y_discrete(labels = c('Trial 1-21',
+                              'Trial 1-21',
+                              'Trial 22-42',
+                              'Trial 22-42',
+                              'Trial 43-64',
+                              'Trial 43-64',
+                              'Trial 64-84',
+                              'Trial 64-84'),
+                   position = "right") +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  hjust = 1,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331"), 
+                                 each = 1, times = 4),
+                    breaks = c("b_Intercept",
+                               "b_logConEinigeUnbiased_new",
+                               "b_logConEinigeFalse_new",
+                               "b_logConEinigeInfelict_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False",
+                               "Infelicitous")) +
+  ggtitle("Alle")
+
+ggarrange(m_trial_einige, m_trial_alle, common.legend = T, legend = "bottom")
+
+# ggsave("RT-block-inferred.png", width = 8, height = 4, dpi = "retina")
 
 
 ###############################
@@ -264,86 +361,76 @@ d2LogicResp$respond_type = factor(d2LogicResp$respond_type, ordered = F, levels 
 
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions
 # and respondent type
-# RT_SHAPE_respond = brm(log(RT) ~ logCon * respond_type +
-#                           (1 + logCon | submission_id) +  
-#                           (1 + respond_type | picture),
-#                         iter = 4000,
-#                         filter(d2LogicResp, Region == "SHAPE"))
+RT_SHAPE_respond = brm(log(RT) ~ logCon * respond_type +
+                          (1 + logCon | submission_id) +
+                          (1 + respond_type | picture),
+                        iter = 4000,
+                        filter(d2LogicResp, Region == "SHAPE"))
 
 # Save output (model object)
-# saveRDS(RT_SHAPE_respond, "RT_SHAPE_respond.RDS")
+saveRDS(RT_SHAPE_respond, "RT_SHAPE_respond.RDS")
 
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions,
 # respondent type, and shape term
-# RT_SHAPE_respond_crit = brm(log(RT) ~ logCon * respond_type * critical +
-#                               (1 + logCon + critical | submission_id) +
-#                               (1 + respond_type | picture),
-#                             iter = 4000,
-#                             filter(d2LogicResp, Region == "SHAPE"))
+RT_SHAPE_respond_crit = brm(log(RT) ~ logCon * respond_type * critical +
+                              (1 + logCon + critical | submission_id) +
+                              (1 + respond_type | picture),
+                            iter = 4000,
+                            filter(d2LogicResp, Region == "SHAPE"))
 
 # Save output (model object)
-# saveRDS(RT_SHAPE_respond_crit, "RT_SHAPE_respond_crit.RDS")
+saveRDS(RT_SHAPE_respond_crit, "RT_SHAPE_respond_crit.RDS")
 
 # Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions,
 # respondent type, and experimental block
-# RT_SHAPE_respond_trial = brm(log(RT) ~ logCon * respond_type * trial_name +
-#                           (1 + logCon + trial_name | submission_id) +
-#                           (1 + respond_type | picture),
-#                         iter = 4000,
-#                         filter(d2LogicResp, Region == "SHAPE"))
+RT_SHAPE_respond_trial = brm(log(RT) ~ logCon * respond_type * trial_name +
+                          (1 + logCon + trial_name | submission_id) +
+                          (1 + respond_type | picture),
+                        iter = 4000,
+                        filter(d2LogicResp, Region == "SHAPE"))
 
 # Save output (model object)
-# saveRDS(RT_SHAPE_respond_trial, "RT_SHAPE_respond_trial.RDS")
+saveRDS(RT_SHAPE_respond_trial, "RT_SHAPE_respond_trial.RDS")
 
-# Run statistical model predicting RTs at the SHAPE region as a function of the logical conditions,
-# respondent type, shape term, and experimental block
-# RT_SHAPE_respond_crit_trial = brm(log(RT) ~ logCon * respond_type * critical * trial_name +
-#                               (1 + logCon + critical + trial_name | submission_id) +
-#                               (1 + respond_type + trial_name | picture),
-#                             iter = 4000,
-#                             filter(d2LogicResp, Region == "SHAPE"))
-
-# Save output (model object)
-# saveRDS(RT_SHAPE_respond_crit_trial, "RT_SHAPE_respond_crit_trial.RDS")
 
 # Load model object
 RT_SHAPE_respond <- readRDS("RT_SHAPE_respond.RDS")
 
-# Extract summary of samples
-# Show probabilities of relevant comparisons
-samples_summary_SHAPE_respond <-  posterior_samples(RT_SHAPE_respond) %>%
-  summarize(ProbabilityEinigeBiasedFasterEinigeUnbiasedSemantic = sum((b_logConEinigeUnbiased > 0)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeInfelictSemantic = sum((b_logConEinigeInfelict > 0)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeFalseSemantic = sum((b_logConEinigeFalse > 0)) / n(),
-            ProbabilityAlleBiasedFasterAlleUnbiasedSemantic = sum((b_logConAlleUnbiased > b_logConAlleBiased)) / n(),
-            ProbabilityAlleBiasedFasterAlleFalseSemantic = sum((b_logConAlleFalse > b_logConAlleBiased)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeUnbiasedPragmatic = sum((b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typePragmatic` > 0)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeInfelictPragmatic = sum((b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typePragmatic` > 0)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeFalsePragmatic = sum((b_logConEinigeFalse + `b_logConEinigeFalse:respond_typePragmatic` > 0)) / n(),
-            ProbabilityAlleBiasedFasterAlleUnbiasedPragmatic = sum((b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typePragmatic` > b_logConAlleBiased + `b_logConAlleBiased:respond_typePragmatic`)) / n(),
-            ProbabilityAlleBiasedFasterAlleFalsePragmatic = sum((b_logConAlleFalse + `b_logConAlleFalse:respond_typePragmatic` > b_logConAlleBiased + `b_logConAlleBiased:respond_typePragmatic`)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeUnbiasedMixed = sum((b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typeMixed` > 0)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeInfelictMixed = sum((b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typeMixed` > 0)) / n(),
-            ProbabilityEinigeBiasedFasterEinigeFalseMixed = sum((b_logConEinigeFalse + `b_logConEinigeFalse:respond_typeMixed` > 0)) / n(),
-            ProbabilityAlleBiasedFasterAlleUnbiasedMixed = sum((b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typeMixed` > b_logConAlleBiased + `b_logConAlleBiased:respond_typeMixed`)) / n(),
-            ProbabilityAlleBiasedFasterAlleFalseMixed = sum((b_logConAlleFalse + `b_logConAlleFalse:respond_typeMixed` > b_logConAlleBiased + `b_logConAlleBiased:respond_typeMixed`)) / n()) %>%
-  gather(key = "Hypothesis", value = "Probability") %>%
-  mutate(Hypothesis = recode(Hypothesis, "ProbabilityEinigeBiasedFasterEinigeUnbiasedSemantic" = "[einige][semantic] Unbiased > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeInfelictSemantic" = "[einige][semantic] Infelict > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeFalseSemantic" = "[einige][semantic] False > Biased",
-                             "ProbabilityAlleBiasedFasterAlleUnbiasedSemantic" = "[alle][semantic] Unbiased > Biased",
-                             "ProbabilityAlleBiasedFasterAlleFalseSemantic" = "[alle][semantic] False > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeUnbiasedPragmatic" = "[einige][pragmatic] Unbiased > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeInfelictPragmatic" = "[einige][pragmatic] Infelict > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeFalsePragmatic" = "[einige][pragmatic] False > Biased",
-                             "ProbabilityAlleBiasedFasterAlleUnbiasedPragmatic" = "[alle][pragmatic] Unbiased > Biased",
-                             "ProbabilityAlleBiasedFasterAlleFalsePragmatic" = "[alle][pragmatic] False > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeUnbiasedMixed" = "[einige][mixed] Unbiased > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeInfelictMixed" = "[einige][mixed] Infelict > Biased",
-                             "ProbabilityEinigeBiasedFasterEinigeFalseMixed" = "[einige][mixed] False > Biased",
-                             "ProbabilityAlleBiasedFasterAlleUnbiasedMixed" = "[alle][mixed] Unbiased > Biased",
-                             "ProbabilityAlleBiasedFasterAlleFalseMixed" = "[alle][mixed] False > Biased"))
-
+# # Extract summary of samples
+# # Show probabilities of relevant comparisons
+# samples_summary_SHAPE_respond <-  posterior_samples(RT_SHAPE_respond) %>%
+#   summarize(ProbabilityEinigeBiasedFasterEinigeUnbiasedSemantic = sum((b_logConEinigeUnbiased > 0)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeInfelictSemantic = sum((b_logConEinigeInfelict > 0)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeFalseSemantic = sum((b_logConEinigeFalse > 0)) / n(),
+#             ProbabilityAlleBiasedFasterAlleUnbiasedSemantic = sum((b_logConAlleUnbiased > b_logConAlleBiased)) / n(),
+#             ProbabilityAlleBiasedFasterAlleFalseSemantic = sum((b_logConAlleFalse > b_logConAlleBiased)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeUnbiasedPragmatic = sum((b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typePragmatic` > 0)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeInfelictPragmatic = sum((b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typePragmatic` > 0)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeFalsePragmatic = sum((b_logConEinigeFalse + `b_logConEinigeFalse:respond_typePragmatic` > 0)) / n(),
+#             ProbabilityAlleBiasedFasterAlleUnbiasedPragmatic = sum((b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typePragmatic` > b_logConAlleBiased + `b_logConAlleBiased:respond_typePragmatic`)) / n(),
+#             ProbabilityAlleBiasedFasterAlleFalsePragmatic = sum((b_logConAlleFalse + `b_logConAlleFalse:respond_typePragmatic` > b_logConAlleBiased + `b_logConAlleBiased:respond_typePragmatic`)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeUnbiasedMixed = sum((b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typeMixed` > 0)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeInfelictMixed = sum((b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typeMixed` > 0)) / n(),
+#             ProbabilityEinigeBiasedFasterEinigeFalseMixed = sum((b_logConEinigeFalse + `b_logConEinigeFalse:respond_typeMixed` > 0)) / n(),
+#             ProbabilityAlleBiasedFasterAlleUnbiasedMixed = sum((b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typeMixed` > b_logConAlleBiased + `b_logConAlleBiased:respond_typeMixed`)) / n(),
+#             ProbabilityAlleBiasedFasterAlleFalseMixed = sum((b_logConAlleFalse + `b_logConAlleFalse:respond_typeMixed` > b_logConAlleBiased + `b_logConAlleBiased:respond_typeMixed`)) / n()) %>%
+#   gather(key = "Hypothesis", value = "Probability") %>%
+#   mutate(Hypothesis = recode(Hypothesis, "ProbabilityEinigeBiasedFasterEinigeUnbiasedSemantic" = "[einige][semantic] Unbiased > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeInfelictSemantic" = "[einige][semantic] Infelict > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeFalseSemantic" = "[einige][semantic] False > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleUnbiasedSemantic" = "[alle][semantic] Unbiased > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleFalseSemantic" = "[alle][semantic] False > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeUnbiasedPragmatic" = "[einige][pragmatic] Unbiased > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeInfelictPragmatic" = "[einige][pragmatic] Infelict > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeFalsePragmatic" = "[einige][pragmatic] False > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleUnbiasedPragmatic" = "[alle][pragmatic] Unbiased > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleFalsePragmatic" = "[alle][pragmatic] False > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeUnbiasedMixed" = "[einige][mixed] Unbiased > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeInfelictMixed" = "[einige][mixed] Infelict > Biased",
+#                              "ProbabilityEinigeBiasedFasterEinigeFalseMixed" = "[einige][mixed] False > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleUnbiasedMixed" = "[alle][mixed] Unbiased > Biased",
+#                              "ProbabilityAlleBiasedFasterAlleFalseMixed" = "[alle][mixed] False > Biased"))
+# 
 
 # Produce clean model summary (model estimates, credibility interval)
 RT_SHAPE_respond_tidy <- broom.mixed::tidy(RT_SHAPE_respond)
