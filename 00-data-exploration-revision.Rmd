@@ -258,8 +258,8 @@ d2Logic %>%
   filter(str_detect(logCon, "iased")) %>% 
   pivot_wider(id_cols = Trial, names_from = logCon, values_from = mean_RT) %>% 
   mutate(
-    effect_einige = `Einige (Unbiased)` - `Einige (Biased)`,
-    effect_alle   = `Alle (Unbiased)` - `Alle (Biased)`
+    Einige = `Einige (Unbiased)` - `Einige (Biased)`,
+    Alle = `Alle (Unbiased)` - `Alle (Biased)`
   )  %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped", full_width = F) %>% 
@@ -1012,7 +1012,7 @@ Posterior probabilities of point hypotheses assume equal prior probabilities.
 einige_drei <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConEinigeUnbiased > Intercept")
 
 einige_drei$hypothesis %>% 
-  mutate(Hypothesis = "[Dreiecke] Unbiased > [Dreiecke] Biased") %>% 
+  mutate(Hypothesis = "[Dreiecke] Einige Unbiased > [Dreiecke] Einige Biased") %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1020,7 +1020,7 @@ einige_drei$hypothesis %>%
 einige_kreis <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConEinigeUnbiased + criticalKreise + logConEinigeUnbiased:criticalKreise > Intercept + criticalKreise ")
 
 einige_kreis$hypothesis %>% 
-  mutate(Hypothesis = "[Kreise] Unbiased > [Kreise] Biased") %>% 
+  mutate(Hypothesis = "[Kreise] Einige Unbiased > [Kreise] Einige Biased") %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1028,7 +1028,7 @@ einige_kreis$hypothesis %>%
 einige_quad <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConEinigeUnbiased + criticalQuadrate + logConEinigeUnbiased:criticalQuadrate > Intercept + criticalQuadrate ")
 
 einige_quad$hypothesis %>%
-  mutate(Hypothesis = "[Quadrate] Unbiased > [Quadrate] Biased") %>% 
+  mutate(Hypothesis = "[Quadrate] Einige Unbiased > [Quadrate] Einige Biased") %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1036,7 +1036,7 @@ einige_quad$hypothesis %>%
 alle_drei <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConAlleUnbiased > Intercept + logConAlleBiased")
 
 alle_drei$hypothesis %>%
-  mutate(Hypothesis = "[Dreiecke] Unbiased > [Dreiecke] Biased") %>% 
+  mutate(Hypothesis = "[Dreiecke] Alle Unbiased > [Dreiecke] Alle Biased") %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1044,7 +1044,7 @@ alle_drei$hypothesis %>%
 alle_krei <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConAlleUnbiased + criticalKreise + logConAlleUnbiased:criticalKreise > Intercept + logConAlleBiased + criticalKreise + logConAlleBiased:criticalKreise")
 
 alle_krei$hypothesis %>% 
-  mutate(Hypothesis = "[Kreise] Unbiased > [Kreise] Biased") %>% 
+  mutate(Hypothesis = "[Kreise] Alle Unbiased > [Kreise] Alle Biased") %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1052,7 +1052,7 @@ alle_krei$hypothesis %>%
 alle_quad <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConAlleUnbiased + criticalQuadrate + logConAlleUnbiased:criticalQuadrate > Intercept + logConAlleBiased + criticalQuadrate + logConAlleBiased:criticalQuadrate")
 
 alle_quad$hypothesis %>%
-  mutate(Hypothesis = "[Quadrate] Unbiased > [Quadrate] Biased") %>% 
+  mutate(Hypothesis = "[Quadrate] Alle Unbiased > [Quadrate] Alle Biased") %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1953,7 +1953,7 @@ Posterior probabilities of point hypotheses assume equal prior probabilities.
 einige_1 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased > Intercept")
 
 einige_1$hypothesis %>%
-  mutate(Hypothesis = "[1-21] Unbiased > [1-21] Biased") %>% 
+  mutate(Hypothesis = "[1-21] Einige Unbiased > [1-21] Einige Biased") %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1961,7 +1961,7 @@ einige_1$hypothesis %>%
 einige_2 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_2 + logConEinigeUnbiased:trial_nametask_three_2 > Intercept + trial_nametask_three_2 ")
 
 einige_2$hypothesis %>%
-  mutate(Hypothesis = "[22-42] Unbiased > [22-42] Biased") %>%
+  mutate(Hypothesis = "[22-42] Einige Unbiased > [22-42] Einige Biased") %>%
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1969,7 +1969,7 @@ einige_2$hypothesis %>%
 einige_3 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_3 + logConEinigeUnbiased:trial_nametask_three_3 > Intercept + trial_nametask_three_3 ")
 
 einige_3$hypothesis %>%
-  mutate(Hypothesis = "[43-63] Unbiased > [43-63] Biased") %>%
+  mutate(Hypothesis = "[43-63] Einige Unbiased > [43-63] Einige Biased") %>%
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1977,7 +1977,7 @@ einige_3$hypothesis %>%
 einige_4 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_4 + logConEinigeUnbiased:trial_nametask_three_4 > Intercept + trial_nametask_three_4")
 
 einige_4$hypothesis %>%
-  mutate(Hypothesis = "[64-84] Unbiased > [64-84] Biased") %>%
+  mutate(Hypothesis = "[64-84] Einige Unbiased > [64-84] Einige Biased") %>%
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1985,7 +1985,7 @@ einige_4$hypothesis %>%
 alle_1 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased > Intercept + logConAlleBiased")
 
 alle_1$hypothesis %>%
-  mutate(Hypothesis = "[1-21] Unbiased > [1-21] Biased") %>%
+  mutate(Hypothesis = "[1-21] Alle Unbiased > [1-21] Alle Biased") %>%
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -1993,7 +1993,7 @@ alle_1$hypothesis %>%
 alle_2 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_2 + logConAlleUnbiased:trial_nametask_three_2 > Intercept + logConAlleBiased + trial_nametask_three_2 + logConAlleBiased:trial_nametask_three_2")
 
 alle_2$hypothesis %>%
-  mutate(Hypothesis = "[22-42] Unbiased > [22-42] Biased") %>%
+  mutate(Hypothesis = "[22-42] Alle Unbiased > [22-42] Alle Biased") %>%
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -2001,7 +2001,7 @@ alle_2$hypothesis %>%
 alle_3 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_3 + logConAlleUnbiased:trial_nametask_three_3 > Intercept + logConAlleBiased + trial_nametask_three_3 + logConAlleBiased:trial_nametask_three_3")
 
 alle_3$hypothesis %>%
-  mutate(Hypothesis = "[43-63] Unbiased > [43-63] Biased") %>%
+  mutate(Hypothesis = "[43-63] Alle Unbiased > [43-63] Alle Biased") %>%
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
@@ -2009,7 +2009,7 @@ alle_3$hypothesis %>%
 alle_4 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_4 + logConAlleUnbiased:trial_nametask_three_4 > Intercept + logConAlleBiased + trial_nametask_three_4 + logConAlleBiased:trial_nametask_three_4")
 
 alle_4$hypothesis %>%
-  mutate(Hypothesis = "[64-84] Unbiased > [64-84] Biased") %>%
+  mutate(Hypothesis = "[64-84] Alle Unbiased > [64-84] Alle Biased") %>%
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
