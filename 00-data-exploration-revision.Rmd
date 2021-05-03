@@ -1,6 +1,8 @@
 ---
-title: "Data exploration - Shape term and block effects"
-output: html_document
+title: "Supplementary material - Exploratory analyses"
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -13,6 +15,7 @@ library(kableExtra)
 RT_SHAPE_crit <- readRDS("RT_SHAPE_crit.RDS")
 RT_SHAPE_trial <- readRDS("RT_SHAPE_trial.RDS")
 
+RT_SHAPE_respond <- readRDS("RT_SHAPE_respond.RDS")
 RT_SHAPE_respond_crit <- readRDS("RT_SHAPE_respond_crit.RDS")
 RT_SHAPE_respond_trial <- readRDS("RT_SHAPE_respond_trial.RDS")
 
@@ -115,77 +118,52 @@ shape_means <- d2Logic %>%
   summarise(Mean = mean(RT), CILow = ci.low(RT), CIHigh = ci.high(RT)) %>%
   mutate(YMin = Mean-CILow, YMax = Mean+CIHigh)
 
-pd <- position_dodge(width = 0.6)
-
 ```
  
 ***
 
-### Empirical means
+### Shape term effects
 
-```{r fig.align='center', fig.height=7, fig.width=14, echo=FALSE, warning=FALSE, message=FALSE}
+#### Empirical means
 
-shape <- d2Logic %>%
+```{r fig.align='center', fig.height=4, echo=FALSE, warning=FALSE, message=FALSE}
+
+pd <- position_dodge(width = 0.9)
+
+d2Logic %>%
   filter(Region == "SHAPE") %>%
-  group_by(logCon, critical) %>%
+  group_by(Region, logCon, critical) %>%
   summarise(Mean = mean(RT), CILow = ci.low(RT), CIHigh = ci.high(RT)) %>%
   mutate(YMin = Mean-CILow, YMax = Mean+CIHigh) %>% 
-  ggplot(aes(critical, Mean, color = logCon, group = logCon, fill = logCon)) +
+  ggplot(aes(Region, Mean, color = logCon, group = logCon, fill = logCon)) +
   geom_errorbar(aes(ymin = YMin, ymax = YMax), width = .1, 
                 size = 1.1, alpha = .8, position = pd) +
   geom_point(aes(shape = logCon), size = 3.5, alpha = .9, position = pd, color = "black", stroke = .9) +
+  facet_wrap( ~ critical) +
   theme_minimal() +
   # facet_wrap( ~ logCon, nrow = 1, labeller = as_labeller(block_labels)) +
-  theme(axis.title.x = element_blank(), panel.spacing = unit(2, "lines"),
-        axis.text.x = element_text(face = "bold", color = "black", size = 14, 
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        strip.text.x = element_text(face = "bold", color = "black", size = 14, 
                                    vjust = .5,
                                    margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        legend.position = "bottom",
         axis.title.y = element_text(face = "bold", size = 14, angle = 0, vjust = .5,
                                     margin = margin(t = 0, r = 15, b = 0, l = 0)),
         legend.background = element_rect(size = .5, linetype = "solid"),  
-        plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
+        plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank(),
+        legend.position = "bottom") +
   labs(y = "RTs") +
   scale_color_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5,  byrow = T)) +
   scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5, byrow = T)) +
-  scale_shape_manual(values = c(21, 21, 21, 21, 22, 22, 22), guide = guide_legend(title = "Condition", title.hjust = 0.5,  byrow = T)) +
-  scale_x_discrete(position = "top")
+  scale_shape_manual(values = c(21, 21, 21, 21, 22, 22, 22), guide = guide_legend(title = "Condition", title.hjust = 0.5,  byrow = T))
 
-block <- d2Logic %>%
-  filter(Region == "SHAPE") %>%
-  group_by(logCon, trial_name) %>%
-  summarise(Mean = mean(RT), CILow = ci.low(RT), CIHigh = ci.high(RT)) %>%
-  mutate(YMin = Mean-CILow, YMax = Mean+CIHigh) %>% 
-  ggplot(aes(trial_name, Mean, color = logCon, group = logCon, fill = logCon)) +
-  geom_line(size = .6, linetype = "dashed", alpha = .5, position = pd) +
-  geom_errorbar(aes(ymin = YMin, ymax = YMax), width = .1, 
-                size = 1.1, alpha = .8, position = pd) +
-  geom_point(aes(shape = logCon), size = 3.5, alpha = .9, position = pd, color = "black", stroke = .9) +
-  theme_minimal() +
-  # facet_wrap( ~ logCon, nrow = 1, labeller = as_labeller(block_labels)) +
-  theme(axis.title.x = element_blank(), panel.spacing = unit(2, "lines"),
-        axis.text.x = element_text(face = "bold", color = "black", size = 14, 
-                                   vjust = .5,
-                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        legend.position = "bottom",
-        axis.title.y = element_blank(),
-        legend.background = element_rect(size = .5, linetype = "solid"),  
-        plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
-  scale_color_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5,  byrow = T)) +
-  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5, byrow = T)) +
-  scale_shape_manual(values = c(21, 21, 21, 21, 22, 22, 22), 
-                     guide = guide_legend(title = "Condition", 
-                                          title.hjust = 0.5,  byrow = T)) +
-  scale_x_discrete(position = "top", labels = block_labels) +
-  scale_y_continuous(position = "right")
-
-ggarrange(shape, block, common.legend = T, legend = "bottom")
+# ggsave("RT-shape-means.png", height = 4, dpi = "retina")
 
 ```
 
 Empirical means in numbers for relevant conditions and numerical effects for raw RTs:
 
-```{r fig.align='center', echo=FALSE, warning=FALSE, message=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 d2Logic %>%
   mutate(`Shape term` = critical) %>% 
@@ -195,26 +173,6 @@ d2Logic %>%
   ungroup() %>% 
   filter(str_detect(logCon, "iased")) %>% 
   pivot_wider(id_cols = `Shape term`, names_from = logCon, values_from = mean_RT) %>% 
-  mutate(
-    Einige = `Einige (Unbiased)` - `Einige (Biased)`,
-    Alle = `Alle (Unbiased)` - `Alle (Biased)`
-  ) %>% 
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped", full_width = F) %>% 
-  add_header_above(c(" " = 1, "Condition" = 4, "Effect" = 2))
-
-
-d2Logic %>%
-  mutate(Trial = factor(trial_name, labels = c("1-21",
-                                               "22-42",
-                                               "43-63",
-                                               "64-84"))) %>% 
-  filter(Region == "SHAPE") %>% 
-  group_by(logCon, Trial) %>% 
-  summarize(mean_RT = mean((RT))) %>% 
-  ungroup() %>% 
-  filter(str_detect(logCon, "iased")) %>% 
-  pivot_wider(id_cols = Trial, names_from = logCon, values_from = mean_RT) %>% 
   mutate(
     Einige = `Einige (Unbiased)` - `Einige (Biased)`,
     Alle = `Alle (Unbiased)` - `Alle (Biased)`
@@ -227,7 +185,7 @@ d2Logic %>%
 
 Empirical means in numbers for relevant conditions and numerical effects for log(RTs):
 
-```{r fig.align='center', echo=FALSE, warning=FALSE, message=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 d2Logic %>%
   mutate(`Shape term` = critical) %>% 
@@ -245,85 +203,93 @@ d2Logic %>%
   kable_styling(latex_options = "striped", full_width = F) %>% 
   add_header_above(c(" " = 1, "Condition" = 4, "Effect" = 2))
 
+```
 
-d2Logic %>%
-  mutate(Trial = factor(trial_name, labels = c("1-21",
-                                               "22-42",
-                                               "43-63",
-                                               "64-84"))) %>% 
-  filter(Region == "SHAPE") %>% 
-  group_by(logCon, Trial) %>% 
-  summarize(mean_RT = mean(log(RT))) %>% 
-  ungroup() %>% 
-  filter(str_detect(logCon, "iased")) %>% 
-  pivot_wider(id_cols = Trial, names_from = logCon, values_from = mean_RT) %>% 
-  mutate(
-    Einige = `Einige (Unbiased)` - `Einige (Biased)`,
-    Alle = `Alle (Unbiased)` - `Alle (Biased)`
-  )  %>% 
+#### Hypothesis tests
+
+'CI': 90%-CI for one-sided and 95%-CI for two-sided hypotheses.
+
+'*': For one-sided hypotheses, the posterior probability exceeds 95%; for two-sided hypotheses, the value tested against lies outside the 95%-CI.
+
+Posterior probabilities of point hypotheses assume equal prior probabilities.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+hypotheses <- 
+  c("logConEinigeUnbiased + critical1 + logConEinigeUnbiased:critical1 > critical1",
+  "logConEinigeUnbiased + critical2 + logConEinigeUnbiased:critical2 > critical2",
+  "(logConEinigeUnbiased + critical2 + logConEinigeUnbiased:critical2) - (logConEinigeUnbiased + critical1 + logConEinigeUnbiased:critical1) > critical2 - critical1",
+  "logConAlleUnbiased + critical1 + logConAlleUnbiased:critical1 > logConAlleBiased + critical1 + logConAlleBiased:critical1",
+  "logConAlleUnbiased + critical2 + logConAlleUnbiased:critical2 > logConAlleBiased + critical2 + logConAlleBiased:critical2",
+  "(logConAlleUnbiased + critical2 + logConAlleUnbiased:critical2) - (logConAlleUnbiased + critical1 + logConAlleUnbiased:critical1) > (logConAlleBiased + critical2 + logConAlleBiased:critical2) - (logConAlleBiased + critical1 + logConAlleBiased:critical1)")
+
+tests <- brms::hypothesis(RT_SHAPE_crit, hypotheses)
+
+tests$hypothesis %>%
+  mutate(Hypothesis = case_when(Hypothesis == "(logConEinigeUnbiased+critical1+logConEinigeUnbiased:critical1)-(critical1) > 0" ~ "[Dreiecke] Einige Unbiased > [Dreiecke] Einige Biased",
+                        Hypothesis == "(logConEinigeUnbiased+critical2+logConEinigeUnbiased:critical2)-(critical2) > 0" ~ "[Kreise] Einige Unbiased > [Kreise] Einige Biased",
+                      Hypothesis == "((logConEinigeUnbiased+critical2+logConEinigeUnbiased:critical2)-(logConEinigeUnbiased+critical1+logConEinigeUnbiased:critical1))-(critical2-critical1) > 0"  ~ "[Quadrate] Einige Unbiased > [Quadrate] Einige Biased",
+                      Hypothesis == "(logConAlleUnbiased+critical1+logConAlleUnbiased:critical1)-(logConAlleBiased+critical1+logConAlleBiased:critical1) > 0" ~ "[Dreiecke] Alle Unbiased > [Dreiecke] Alle Biased",
+                      Hypothesis == "(logConAlleUnbiased+critical2+logConAlleUnbiased:critical2)-(logConAlleBiased+critical2+logConAlleBiased:critical2) > 0" ~ "[Kreise] Alle Unbiased > [Kreise] Alle Biased",
+                      Hypothesis == "((logConAlleUnbiased+critical2+logConAlleUnbiased:critical2)-(logConAlleUnbiased+critical1+logConAlleUnbiased:critical1))-((logConAlleBiased+critical2+logConAlleBiased:critical2)-(logConAlleBiased+critical1+logConAlleBiased:critical1)) > 0" ~ "[Quadrate] Alle Unbiased > [Quadrate] Alle Biased")) %>% 
   kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped", full_width = F) %>% 
-  add_header_above(c(" " = 1, "Condition" = 4, "Effect" = 2))
+  kable_styling(latex_options = "striped")
 
 ```
 
-***
-
-### Shape term effects
-
-#### Model 1 (condition x critical word)
+#### Model (condition x critical word)
 
 ```{r fig.align='center', fig.height=6, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
 
 m_crit_einige <- RT_SHAPE_crit %>%
   spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
+               b_critical1,
+               b_critical2,
                b_logConEinigeUnbiased,
-               `b_logConEinigeUnbiased:criticalKreise`,
-               `b_logConEinigeUnbiased:criticalQuadrate`,
+               `b_logConEinigeUnbiased:critical1`,
+               `b_logConEinigeUnbiased:critical2`,
                b_logConEinigeInfelict,
-               `b_logConEinigeInfelict:criticalKreise`, 
-               `b_logConEinigeInfelict:criticalQuadrate`,
+               `b_logConEinigeInfelict:critical1`, 
+               `b_logConEinigeInfelict:critical2`,
                b_logConEinigeFalse,
-               `b_logConEinigeFalse:criticalKreise`, 
-               `b_logConEinigeFalse:criticalQuadrate`) %>%
-  mutate(b_criticalKreise_new = b_Intercept + b_criticalKreise,
-         b_criticalQuadrate_new = b_Intercept + b_criticalQuadrate,
+               `b_logConEinigeFalse:critical1`, 
+               `b_logConEinigeFalse:critical2`) %>%
+  mutate(b_critical1_new = b_Intercept + b_critical2,
+         b_critical2_new = b_Intercept + b_critical1,
          b_logConEinigeUnbiased_new = b_Intercept + b_logConEinigeUnbiased,
-         `b_logConEinigeUnbiased:criticalKreise_new` = b_Intercept + b_logConEinigeUnbiased + b_criticalKreise + `b_logConEinigeUnbiased:criticalKreise`,
-         `b_logConEinigeUnbiased:criticalQuadrate_new` = b_Intercept + b_logConEinigeUnbiased + b_criticalQuadrate + `b_logConEinigeUnbiased:criticalQuadrate`,
+         `b_logConEinigeUnbiased:critical1_new` = b_Intercept + b_logConEinigeUnbiased + b_critical2 + `b_logConEinigeUnbiased:critical2`,
+         `b_logConEinigeUnbiased:critical2_new` = b_Intercept + b_logConEinigeUnbiased + b_critical1 + `b_logConEinigeUnbiased:critical1`,
          b_logConEinigeInfelict_new = b_Intercept + b_logConEinigeInfelict,
-         `b_logConEinigeInfelict:criticalKreise_new` = b_Intercept + b_logConEinigeInfelict + b_criticalKreise + `b_logConEinigeInfelict:criticalKreise`,
-         `b_logConEinigeInfelict:criticalQuadrate_new` = b_Intercept + b_logConEinigeInfelict + b_criticalQuadrate + `b_logConEinigeInfelict:criticalQuadrate`,
+         `b_logConEinigeInfelict:critical1_new` = b_Intercept + b_logConEinigeInfelict + b_critical2 + `b_logConEinigeInfelict:critical2`,
+         `b_logConEinigeInfelict:critical2_new` = b_Intercept + b_logConEinigeInfelict + b_critical1 + `b_logConEinigeInfelict:critical1`,
          b_logConEinigeFalse_new = b_Intercept + b_logConEinigeFalse,
-         `b_logConEinigeFalse:criticalKreise_new` = b_Intercept + b_logConEinigeFalse + b_criticalKreise + `b_logConEinigeFalse:criticalKreise`,
-         `b_logConEinigeFalse:criticalQuadrate_new` = b_Intercept + b_logConEinigeFalse + b_criticalQuadrate + `b_logConEinigeFalse:criticalQuadrate`) %>%
+         `b_logConEinigeFalse:critical1_new` = b_Intercept + b_logConEinigeFalse + b_critical2 + `b_logConEinigeFalse:critical2`,
+         `b_logConEinigeFalse:critical2_new` = b_Intercept + b_logConEinigeFalse + b_critical1 + `b_logConEinigeFalse:critical1`) %>%
   gather_draws(b_Intercept,
-               b_criticalKreise_new,
-               b_criticalQuadrate_new,
+               b_critical1_new,
+               b_critical2_new,
                b_logConEinigeUnbiased_new,
-               `b_logConEinigeUnbiased:criticalKreise_new`,
-               `b_logConEinigeUnbiased:criticalQuadrate_new`,
+               `b_logConEinigeUnbiased:critical1_new`,
+               `b_logConEinigeUnbiased:critical2_new`,
                b_logConEinigeInfelict_new,
-               `b_logConEinigeInfelict:criticalKreise_new`, 
-               `b_logConEinigeInfelict:criticalQuadrate_new`,
+               `b_logConEinigeInfelict:critical1_new`, 
+               `b_logConEinigeInfelict:critical2_new`,
                b_logConEinigeFalse_new,
-               `b_logConEinigeFalse:criticalKreise_new`, 
-               `b_logConEinigeFalse:criticalQuadrate_new`) %>%
+               `b_logConEinigeFalse:critical1_new`, 
+               `b_logConEinigeFalse:critical2_new`) %>%
   mutate(.variable = factor(x = .variable, 
          levels = c("b_Intercept",
-               "b_criticalKreise_new",
-               "b_criticalQuadrate_new",
+               "b_critical1_new",
+               "b_critical2_new",
                "b_logConEinigeUnbiased_new",
-               "b_logConEinigeUnbiased:criticalKreise_new",
-               "b_logConEinigeUnbiased:criticalQuadrate_new",
+               "b_logConEinigeUnbiased:critical1_new",
+               "b_logConEinigeUnbiased:critical2_new",
                "b_logConEinigeFalse_new",
-               "b_logConEinigeFalse:criticalKreise_new", 
-               "b_logConEinigeFalse:criticalQuadrate_new",
+               "b_logConEinigeFalse:critical1_new", 
+               "b_logConEinigeFalse:critical2_new",
                "b_logConEinigeInfelict_new",
-               "b_logConEinigeInfelict:criticalKreise_new", 
-               "b_logConEinigeInfelict:criticalQuadrate_new"))) %>% 
+               "b_logConEinigeInfelict:critical1_new", 
+               "b_logConEinigeInfelict:critical2_new"))) %>% 
   ggplot(aes(y = .variable, x = .value, fill = .variable)) +
   stat_halfeye(.width = c(.90, .95), alpha = .6) +
   geom_pointinterval(alpha = .4) +
@@ -367,45 +333,45 @@ m_crit_einige <- RT_SHAPE_crit %>%
 
 m_crit_alle <- RT_SHAPE_crit %>%
   spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
+               b_critical2,
+               b_critical1,
                b_logConAlleBiased,
-               `b_logConAlleBiased:criticalKreise`,
-               `b_logConAlleBiased:criticalQuadrate`,
+               `b_logConAlleBiased:critical1`,
+               `b_logConAlleBiased:critical2`,
                b_logConAlleUnbiased,
-               `b_logConAlleUnbiased:criticalKreise`,
-               `b_logConAlleUnbiased:criticalQuadrate`,
+               `b_logConAlleUnbiased:critical1`,
+               `b_logConAlleUnbiased:critical2`,
                b_logConAlleFalse,
-               `b_logConAlleFalse:criticalKreise`, 
-               `b_logConAlleFalse:criticalQuadrate`) %>%
+               `b_logConAlleFalse:critical2`, 
+               `b_logConAlleFalse:critical1`) %>%
   mutate(b_logConAlleBiased_new = b_Intercept + b_logConAlleBiased,
-         `b_logConAlleBiased:criticalKreise_new` = b_Intercept + b_logConAlleBiased + b_criticalKreise + `b_logConAlleBiased:criticalKreise`,
-         `b_logConAlleBiased:criticalQuadrate_new` = b_Intercept + b_logConAlleBiased + b_criticalQuadrate + `b_logConAlleBiased:criticalQuadrate`,
+         `b_logConAlleBiased:critical1_new` = b_Intercept + b_logConAlleBiased + b_critical2 + `b_logConAlleBiased:critical2`,
+         `b_logConAlleBiased:critical2_new` = b_Intercept + b_logConAlleBiased + b_critical1 + `b_logConAlleBiased:critical1`,
          b_logConAlleUnbiased_new = b_Intercept + b_logConAlleUnbiased,
-         `b_logConAlleUnbiased:criticalKreise_new` = b_Intercept + b_logConAlleUnbiased + b_criticalKreise + `b_logConAlleUnbiased:criticalKreise`,
-         `b_logConAlleUnbiased:criticalQuadrate_new` = b_Intercept + b_logConAlleUnbiased + b_criticalQuadrate + `b_logConAlleUnbiased:criticalQuadrate`,
+         `b_logConAlleUnbiased:critical1_new` = b_Intercept + b_logConAlleUnbiased + b_critical2 + `b_logConAlleUnbiased:critical2`,
+         `b_logConAlleUnbiased:critical2_new` = b_Intercept + b_logConAlleUnbiased + b_critical1 + `b_logConAlleUnbiased:critical1`,
          b_logConAlleFalse_new = b_Intercept + b_logConAlleFalse,
-         `b_logConAlleFalse:criticalKreise_new` = b_Intercept + b_logConAlleFalse + b_criticalKreise + `b_logConAlleFalse:criticalKreise`,
-         `b_logConAlleFalse:criticalQuadrate_new` = b_Intercept + b_logConAlleFalse + b_criticalQuadrate + `b_logConAlleFalse:criticalQuadrate`) %>% 
+         `b_logConAlleFalse:critical1_new` = b_Intercept + b_logConAlleFalse + b_critical2 + `b_logConAlleFalse:critical2`,
+         `b_logConAlleFalse:critical2_new` = b_Intercept + b_logConAlleFalse + b_critical1 + `b_logConAlleFalse:critical1`) %>% 
   gather_draws(b_logConAlleBiased_new,
-               `b_logConAlleBiased:criticalKreise_new`,
-               `b_logConAlleBiased:criticalQuadrate_new`,
+               `b_logConAlleBiased:critical2_new`,
+               `b_logConAlleBiased:critical1_new`,
                b_logConAlleUnbiased_new,
-               `b_logConAlleUnbiased:criticalKreise_new`,
-               `b_logConAlleUnbiased:criticalQuadrate_new`,
+               `b_logConAlleUnbiased:critical2_new`,
+               `b_logConAlleUnbiased:critical1_new`,
                b_logConAlleFalse_new,
-               `b_logConAlleFalse:criticalKreise_new`, 
-               `b_logConAlleFalse:criticalQuadrate_new`) %>%
+               `b_logConAlleFalse:critical2_new`, 
+               `b_logConAlleFalse:critical1_new`) %>%
   mutate(.variable = factor(x = .variable, 
          levels = c("b_logConAlleBiased_new",
-               "b_logConAlleBiased:criticalKreise_new",
-               "b_logConAlleBiased:criticalQuadrate_new",
+               "b_logConAlleBiased:critical1_new",
+               "b_logConAlleBiased:critical2_new",
                "b_logConAlleUnbiased_new",
-               "b_logConAlleUnbiased:criticalKreise_new",
-               "b_logConAlleUnbiased:criticalQuadrate_new",
+               "b_logConAlleUnbiased:critical1_new",
+               "b_logConAlleUnbiased:critical2_new",
                "b_logConAlleFalse_new",
-               "b_logConAlleFalse:criticalKreise_new", 
-               "b_logConAlleFalse:criticalQuadrate_new"))) %>%
+               "b_logConAlleFalse:critical1_new", 
+               "b_logConAlleFalse:critical2_new"))) %>%
   ggplot(aes(y = .variable, x = .value, fill = .variable)) +
   stat_halfeye(.width = c(.90, .95), alpha = .6) +
   scale_y_discrete(labels = c('Dreiecke', 
@@ -442,559 +408,104 @@ m_crit_alle <- RT_SHAPE_crit %>%
                                 "False")) +
   ggtitle("Alle")
 
-ggarrange(m_crit_einige, m_crit_alle, common.legend = T, legend = "bottom")
+# `est-crit` <- 
+  ggarrange(m_crit_einige, m_crit_alle, common.legend = T, legend = "bottom")
+
+# ggsave("est-crit.png", height = 6, width = 10, dpi = "retina")
 
 ```
 
-#### Model 2 (condition x pragmatic profile x critical word)
+***
 
-```{r fig.align='center', fig.height=6, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
+### Block effects
 
-m_crit_einige_sem <- RT_SHAPE_respond_crit %>%
-  spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
-               b_logConEinigeUnbiased,
-               `b_logConEinigeUnbiased:criticalKreise`,
-               `b_logConEinigeUnbiased:criticalQuadrate`,
-               b_logConEinigeInfelict,
-               `b_logConEinigeInfelict:criticalKreise`, 
-               `b_logConEinigeInfelict:criticalQuadrate`,
-               b_logConEinigeFalse,
-               `b_logConEinigeFalse:criticalKreise`, 
-               `b_logConEinigeFalse:criticalQuadrate`) %>%
-  mutate(b_criticalKreise_new = b_Intercept + b_criticalKreise,
-         b_criticalQuadrate_new = b_Intercept + b_criticalQuadrate,
-         b_logConEinigeUnbiased_new = b_Intercept + b_logConEinigeUnbiased,
-         `b_logConEinigeUnbiased:criticalKreise_new` = b_Intercept + b_logConEinigeUnbiased + b_criticalKreise + `b_logConEinigeUnbiased:criticalKreise`,
-         `b_logConEinigeUnbiased:criticalQuadrate_new` = b_Intercept + b_logConEinigeUnbiased + b_criticalQuadrate + `b_logConEinigeUnbiased:criticalQuadrate`,
-         b_logConEinigeInfelict_new = b_Intercept + b_logConEinigeInfelict,
-         `b_logConEinigeInfelict:criticalKreise_new` = b_Intercept + b_logConEinigeInfelict + b_criticalKreise + `b_logConEinigeInfelict:criticalKreise`,
-         `b_logConEinigeInfelict:criticalQuadrate_new` = b_Intercept + b_logConEinigeInfelict + b_criticalQuadrate + `b_logConEinigeInfelict:criticalQuadrate`,
-         b_logConEinigeFalse_new = b_Intercept + b_logConEinigeFalse,
-         `b_logConEinigeFalse:criticalKreise_new` = b_Intercept + b_logConEinigeFalse + b_criticalKreise + `b_logConEinigeFalse:criticalKreise`,
-         `b_logConEinigeFalse:criticalQuadrate_new` = b_Intercept + b_logConEinigeFalse + b_criticalQuadrate + `b_logConEinigeFalse:criticalQuadrate`) %>%
-  gather_draws(b_Intercept,
-               b_criticalKreise_new,
-               b_criticalQuadrate_new,
-               b_logConEinigeUnbiased_new,
-               `b_logConEinigeUnbiased:criticalKreise_new`,
-               `b_logConEinigeUnbiased:criticalQuadrate_new`,
-               b_logConEinigeInfelict_new,
-               `b_logConEinigeInfelict:criticalKreise_new`, 
-               `b_logConEinigeInfelict:criticalQuadrate_new`,
-               b_logConEinigeFalse_new,
-               `b_logConEinigeFalse:criticalKreise_new`, 
-               `b_logConEinigeFalse:criticalQuadrate_new`) %>%
-  mutate(.variable = factor(x = .variable, 
-         levels = c("b_Intercept",
-               "b_criticalKreise_new",
-               "b_criticalQuadrate_new",
-               "b_logConEinigeUnbiased_new",
-               "b_logConEinigeUnbiased:criticalKreise_new",
-               "b_logConEinigeUnbiased:criticalQuadrate_new",
-               "b_logConEinigeFalse_new",
-               "b_logConEinigeFalse:criticalKreise_new", 
-               "b_logConEinigeFalse:criticalQuadrate_new",
-               "b_logConEinigeInfelict_new",
-               "b_logConEinigeInfelict:criticalKreise_new", 
-               "b_logConEinigeInfelict:criticalQuadrate_new"))) %>% 
-  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
-  stat_halfeye(.width = c(.90, .95), alpha = .6) +
-  geom_pointinterval(alpha = .4) +
-  scale_y_discrete(labels = c('Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate')) +
+#### Empirical means
+
+```{r fig.align='center', fig.height=5, width=12, echo=FALSE, warning=FALSE, message=FALSE}
+
+pd <- position_dodge(width = 0.6)
+
+d2Logic %>%
+  filter(Region == "SHAPE") %>%
+  group_by(logCon, trial_name) %>%
+  summarise(Mean = mean(RT), CILow = ci.low(RT), CIHigh = ci.high(RT)) %>%
+  mutate(YMin = Mean-CILow, YMax = Mean+CIHigh) %>% 
+  ggplot(aes(trial_name, Mean, color = logCon, group = logCon, fill = logCon)) +
+  geom_line(size = .6, linetype = "dashed", alpha = .5, position = pd) +
+  geom_errorbar(aes(ymin = YMin, ymax = YMax), width = .1, 
+                size = 1.1, alpha = .8, position = pd) +
+  geom_point(aes(shape = logCon), size = 3.5, alpha = .9, position = pd, color = "black", stroke = .9) +
   theme_minimal() +
-  theme(axis.title.x = element_blank(), 
-        axis.title.y = element_blank(),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 12),
-        plot.title = element_text(face = "bold",
-                                  size = 14,
-                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
-        legend.position = "none",
-        panel.grid.major.y = element_blank(), 
-        axis.text.x = element_text(face = "bold", 
+  # facet_wrap( ~ logCon, nrow = 1, labeller = as_labeller(block_labels)) +
+  theme(axis.title.x = element_blank(), panel.spacing = unit(2, "lines"),
+        axis.text.x = element_text(face = "bold", color = "black", size = 14, 
+                                   vjust = .5,
                                    margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        axis.text.y = element_text(face = "bold", 
-                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
-  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
-                                 c(3,3,3,3)),
-                    breaks = c("b_Intercept",
-                               "b_logConEinigeUnbiased_new",
-                               "b_logConEinigeFalse_new",
-                               "b_logConEinigeInfelict_new"),
-                    labels = c("Biased",
-                               "Unbiased",
-                               "False",
-                               "Infelicitous")) +
-  ggtitle("Einige\nSemantic")
+        axis.title.y = element_text(face = "bold", size = 14, angle = 0, vjust = .5,
+                                    margin = margin(t = 0, r = 15, b = 0, l = 0)),
+        legend.background = element_rect(size = .5, linetype = "solid"),  
+        plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank(),
+        legend.position = "bottom") +
+  labs(y = "RTs") +
+  scale_color_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5,  byrow = T)) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), times = 2), guide = guide_legend(title = "Condition", title.hjust = 0.5, byrow = T)) +
+  scale_shape_manual(values = c(21, 21, 21, 21, 22, 22, 22), 
+                     guide = guide_legend(title = "Condition", 
+                                          title.hjust = 0.5,  byrow = T)) +
+  scale_x_discrete(position = "top", labels = block_labels)
 
-m_crit_einige_mix <- RT_SHAPE_respond_crit %>%
-  spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
-               b_respond_typeMixed,
-               `b_respond_typeMixed:criticalKreise`,
-               `b_respond_typeMixed:criticalQuadrate`,
-               b_logConEinigeUnbiased,
-               `b_logConEinigeUnbiased:criticalKreise`,
-               `b_logConEinigeUnbiased:criticalQuadrate`,
-               `b_logConEinigeUnbiased:respond_typeMixed`,
-               `b_logConEinigeUnbiased:respond_typeMixed:criticalKreise`,
-               `b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate`,
-               b_logConEinigeInfelict,
-               `b_logConEinigeInfelict:criticalKreise`, 
-               `b_logConEinigeInfelict:criticalQuadrate`,
-               `b_logConEinigeInfelict:respond_typeMixed`,
-               `b_logConEinigeInfelict:respond_typeMixed:criticalKreise`, 
-               `b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate`,
-               b_logConEinigeFalse,
-               `b_logConEinigeFalse:criticalKreise`, 
-               `b_logConEinigeFalse:criticalQuadrate`,
-               `b_logConEinigeFalse:respond_typeMixed`,
-               `b_logConEinigeFalse:respond_typeMixed:criticalKreise`, 
-               `b_logConEinigeFalse:respond_typeMixed:criticalQuadrate`) %>%
-  mutate(b_respond_typeMixed_new = b_Intercept + b_respond_typeMixed,
-         `b_respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_criticalKreise + `b_respond_typeMixed:criticalKreise`,
-         `b_respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_criticalQuadrate + `b_respond_typeMixed:criticalQuadrate`,
-         `b_logConEinigeUnbiased:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typeMixed`,
-         `b_logConEinigeUnbiased:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeUnbiased + b_criticalKreise + `b_logConEinigeUnbiased:criticalKreise` + `b_logConEinigeUnbiased:respond_typeMixed` + `b_respond_typeMixed:criticalKreise` + `b_logConEinigeUnbiased:respond_typeMixed:criticalKreise`,
-         `b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeUnbiased + b_criticalQuadrate + `b_logConEinigeUnbiased:criticalQuadrate` + `b_logConEinigeUnbiased:respond_typeMixed` + `b_respond_typeMixed:criticalQuadrate` + `b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate`,
-         `b_logConEinigeInfelict:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typeMixed`,
-         `b_logConEinigeInfelict:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeInfelict + b_criticalKreise + `b_logConEinigeInfelict:criticalKreise` + `b_logConEinigeInfelict:respond_typeMixed` + `b_respond_typeMixed:criticalKreise` + `b_logConEinigeInfelict:respond_typeMixed:criticalKreise`,
-         `b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeInfelict + b_criticalQuadrate + `b_logConEinigeInfelict:criticalQuadrate` + `b_logConEinigeInfelict:respond_typeMixed` + `b_respond_typeMixed:criticalQuadrate` + `b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate`,
-         `b_logConEinigeFalse:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeFalse + `b_logConEinigeFalse:respond_typeMixed`,
-         `b_logConEinigeFalse:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeFalse + b_criticalKreise + `b_logConEinigeFalse:criticalKreise` + `b_logConEinigeFalse:respond_typeMixed` + `b_respond_typeMixed:criticalKreise` + `b_logConEinigeFalse:respond_typeMixed:criticalKreise`,
-         `b_logConEinigeFalse:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeFalse + b_criticalQuadrate + `b_logConEinigeFalse:criticalQuadrate` + `b_logConEinigeFalse:respond_typeMixed` + `b_respond_typeMixed:criticalQuadrate` + `b_logConEinigeFalse:respond_typeMixed:criticalQuadrate`) %>%
-  gather_draws(b_respond_typeMixed_new,
-               `b_respond_typeMixed:criticalKreise_new`,
-               `b_respond_typeMixed:criticalQuadrate_new`,
-               `b_logConEinigeUnbiased:respond_typeMixed_new`,
-               `b_logConEinigeUnbiased:respond_typeMixed:criticalKreise_new`,
-               `b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate_new`,
-               `b_logConEinigeInfelict:respond_typeMixed_new`,
-               `b_logConEinigeInfelict:respond_typeMixed:criticalKreise_new`, 
-               `b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate_new`,
-               `b_logConEinigeFalse:respond_typeMixed_new`,
-               `b_logConEinigeFalse:respond_typeMixed:criticalKreise_new`, 
-               `b_logConEinigeFalse:respond_typeMixed:criticalQuadrate_new`) %>%
-  mutate(.variable = factor(x = .variable, 
-         levels = c("b_respond_typeMixed_new",
-               "b_respond_typeMixed:criticalKreise_new",
-               "b_respond_typeMixed:criticalQuadrate_new",
-               "b_logConEinigeUnbiased:respond_typeMixed_new",
-               "b_logConEinigeUnbiased:respond_typeMixed:criticalKreise_new",
-               "b_logConEinigeUnbiased:respond_typeMixed:criticalQuadrate_new",
-               "b_logConEinigeFalse:respond_typeMixed_new",
-               "b_logConEinigeFalse:respond_typeMixed:criticalKreise_new", 
-               "b_logConEinigeFalse:respond_typeMixed:criticalQuadrate_new",
-               "b_logConEinigeInfelict:respond_typeMixed_new",
-               "b_logConEinigeInfelict:respond_typeMixed:criticalKreise_new", 
-               "b_logConEinigeInfelict:respond_typeMixed:criticalQuadrate_new"))) %>% 
-  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
-  stat_halfeye(.width = c(.90, .95), alpha = .6) +
-  geom_pointinterval(alpha = .4) +
-  theme_minimal() +
-  theme(axis.title.x = element_blank(), 
-        axis.title.y = element_blank(),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 12),
-        plot.title = element_text(face = "bold",
-                                  size = 14,
-                                  hjust = .5,
-                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
-        legend.position = "none",
-        panel.grid.major.y = element_blank(), 
-        axis.text.x = element_text(face = "bold", 
-                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        axis.text.y = element_blank()) +
-  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
-                                 c(3,3,3,3)),
-                    breaks = c("b_respond_typeMixed_new",
-                               "b_logConEinigeUnbiased:respond_typeMixed_new",
-                               "b_logConEinigeFalse:respond_typeMixed_new",
-                               "b_logConEinigeInfelict:respond_typeMixed_new"),
-                    labels = c("Biased",
-                               "Unbiased",
-                               "False",
-                               "Infelicitous")) +
-  ggtitle("\nMixed")
-
-m_crit_einige_prag <- RT_SHAPE_respond_crit %>%
-  spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
-               b_respond_typePragmatic,
-               `b_respond_typePragmatic:criticalKreise`,
-               `b_respond_typePragmatic:criticalQuadrate`,
-               b_logConEinigeUnbiased,
-               `b_logConEinigeUnbiased:criticalKreise`,
-               `b_logConEinigeUnbiased:criticalQuadrate`,
-               `b_logConEinigeUnbiased:respond_typePragmatic`,
-               `b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise`,
-               `b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate`,
-               b_logConEinigeInfelict,
-               `b_logConEinigeInfelict:criticalKreise`, 
-               `b_logConEinigeInfelict:criticalQuadrate`,
-               `b_logConEinigeInfelict:respond_typePragmatic`,
-               `b_logConEinigeInfelict:respond_typePragmatic:criticalKreise`, 
-               `b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate`,
-               b_logConEinigeFalse,
-               `b_logConEinigeFalse:criticalKreise`, 
-               `b_logConEinigeFalse:criticalQuadrate`,
-               `b_logConEinigeFalse:respond_typePragmatic`,
-               `b_logConEinigeFalse:respond_typePragmatic:criticalKreise`, 
-               `b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate`) %>%
-  mutate(b_respond_typePragmatic_new = b_Intercept + b_respond_typePragmatic,
-         `b_respond_typePragmatic:criticalKreise_new` = b_Intercept + b_respond_typePragmatic + b_criticalKreise + `b_respond_typePragmatic:criticalKreise`,
-         `b_respond_typePragmatic:criticalQuadrate_new` = b_Intercept + b_respond_typePragmatic + b_criticalQuadrate + `b_respond_typePragmatic:criticalQuadrate`,
-         `b_logConEinigeUnbiased:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typePragmatic`,
-         `b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeUnbiased + b_criticalKreise + `b_logConEinigeUnbiased:criticalKreise` + `b_logConEinigeUnbiased:respond_typePragmatic` + `b_respond_typePragmatic:criticalKreise` + `b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise`,
-         `b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeUnbiased + b_criticalQuadrate + `b_logConEinigeUnbiased:criticalQuadrate` + `b_logConEinigeUnbiased:respond_typePragmatic` + `b_respond_typePragmatic:criticalQuadrate` + `b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate`,
-         `b_logConEinigeInfelict:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typePragmatic`,
-         `b_logConEinigeInfelict:respond_typePragmatic:criticalKreise_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeInfelict + b_criticalKreise + `b_logConEinigeInfelict:criticalKreise` + `b_logConEinigeInfelict:respond_typePragmatic` + `b_respond_typePragmatic:criticalKreise` + `b_logConEinigeInfelict:respond_typePragmatic:criticalKreise`,
-         `b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeInfelict + b_criticalQuadrate + `b_logConEinigeInfelict:criticalQuadrate` + `b_logConEinigeInfelict:respond_typePragmatic` + `b_respond_typePragmatic:criticalQuadrate` + `b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate`,
-         `b_logConEinigeFalse:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeFalse + `b_logConEinigeFalse:respond_typePragmatic`,
-         `b_logConEinigeFalse:respond_typePragmatic:criticalKreise_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeFalse + b_criticalKreise + `b_logConEinigeFalse:criticalKreise` + `b_logConEinigeFalse:respond_typePragmatic` + `b_respond_typePragmatic:criticalKreise` + `b_logConEinigeFalse:respond_typePragmatic:criticalKreise`,
-         `b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeFalse + b_criticalQuadrate + `b_logConEinigeFalse:criticalQuadrate` + `b_logConEinigeFalse:respond_typePragmatic` + `b_respond_typePragmatic:criticalQuadrate` + `b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate`) %>%
-  gather_draws(b_respond_typePragmatic_new,
-               `b_respond_typePragmatic:criticalKreise_new`,
-               `b_respond_typePragmatic:criticalQuadrate_new`,
-               `b_logConEinigeUnbiased:respond_typePragmatic_new`,
-               `b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise_new`,
-               `b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate_new`,
-               `b_logConEinigeInfelict:respond_typePragmatic_new`,
-               `b_logConEinigeInfelict:respond_typePragmatic:criticalKreise_new`, 
-               `b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate_new`,
-               `b_logConEinigeFalse:respond_typePragmatic_new`,
-               `b_logConEinigeFalse:respond_typePragmatic:criticalKreise_new`, 
-               `b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate_new`) %>%
-  mutate(.variable = factor(x = .variable, 
-         levels = c("b_respond_typePragmatic_new",
-               "b_respond_typePragmatic:criticalKreise_new",
-               "b_respond_typePragmatic:criticalQuadrate_new",
-               "b_logConEinigeUnbiased:respond_typePragmatic_new",
-               "b_logConEinigeUnbiased:respond_typePragmatic:criticalKreise_new",
-               "b_logConEinigeUnbiased:respond_typePragmatic:criticalQuadrate_new",
-               "b_logConEinigeFalse:respond_typePragmatic_new",
-               "b_logConEinigeFalse:respond_typePragmatic:criticalKreise_new", 
-               "b_logConEinigeFalse:respond_typePragmatic:criticalQuadrate_new",
-               "b_logConEinigeInfelict:respond_typePragmatic_new",
-               "b_logConEinigeInfelict:respond_typePragmatic:criticalKreise_new", 
-               "b_logConEinigeInfelict:respond_typePragmatic:criticalQuadrate_new"))) %>% 
-  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
-  stat_halfeye(.width = c(.90, .95), alpha = .6) +
-  geom_pointinterval(alpha = .4) +
-  scale_y_discrete(labels = c('Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate'),
-                   position = "right") +
-  theme_minimal() +
-  theme(axis.title.x = element_blank(), 
-        axis.title.y = element_blank(),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 12),
-        plot.title = element_text(face = "bold",
-                                  size = 14,
-                                  hjust = 1,
-                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
-        legend.position = "none",
-        panel.grid.major.y = element_blank(), 
-        axis.text.x = element_text(face = "bold", 
-                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        axis.text.y = element_text(face = "bold", 
-                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
-  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
-                                 c(3,3,3,3)),
-                    breaks = c("b_respond_typePragmatic_new",
-                               "b_logConEinigeUnbiased:respond_typePragmatic_new",
-                               "b_logConEinigeFalse:respond_typePragmatic_new",
-                               "b_logConEinigeInfelict:respond_typePragmatic_new"),
-                    labels = c("Biased",
-                               "Unbiased",
-                               "False",
-                               "Infelicitous")) +
-  ggtitle("\nPragmatic")
-
-ggarrange(m_crit_einige_sem, m_crit_einige_mix, m_crit_einige_prag, common.legend = T, legend = "bottom", ncol = 3)
+# ggsave("RT-block-means.png", height = 5, width = 9, dpi = "retina")
 
 ```
 
+Empirical means in numbers for relevant conditions and numerical effects for raw RTs:
 
-```{r fig.align='center', fig.height=6, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
-m_crit_alle_sem <- RT_SHAPE_respond_crit %>%
-  spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
-               b_logConAlleBiased,
-               `b_logConAlleBiased:criticalKreise`,
-               `b_logConAlleBiased:criticalQuadrate`,
-               b_logConAlleUnbiased,
-               `b_logConAlleUnbiased:criticalKreise`,
-               `b_logConAlleUnbiased:criticalQuadrate`,
-               b_logConAlleFalse,
-               `b_logConAlleFalse:criticalKreise`, 
-               `b_logConAlleFalse:criticalQuadrate`) %>%
-  mutate(b_logConAlleBiased_new = b_Intercept + b_logConAlleBiased,
-         `b_logConAlleBiased:criticalKreise_new` = b_Intercept + b_logConAlleBiased + b_criticalKreise + `b_logConAlleBiased:criticalKreise`,
-         `b_logConAlleBiased:criticalQuadrate_new` = b_Intercept + b_criticalQuadrate,
-         b_logConAlleUnbiased_new = b_Intercept + b_logConAlleUnbiased,
-         `b_logConAlleUnbiased:criticalKreise_new` = b_Intercept + b_logConAlleUnbiased + b_criticalKreise + `b_logConAlleUnbiased:criticalKreise`,
-         `b_logConAlleUnbiased:criticalQuadrate_new` = b_Intercept + b_logConAlleUnbiased + b_criticalQuadrate + `b_logConAlleUnbiased:criticalQuadrate`,
-         b_logConAlleFalse_new = b_Intercept + b_logConAlleFalse,
-         `b_logConAlleFalse:criticalKreise_new` = b_Intercept + b_logConAlleFalse + b_criticalKreise + `b_logConAlleFalse:criticalKreise`,
-         `b_logConAlleFalse:criticalQuadrate_new` = b_Intercept + b_logConAlleFalse + b_criticalQuadrate + `b_logConAlleFalse:criticalQuadrate`) %>%
-  gather_draws(b_logConAlleBiased_new,
-               `b_logConAlleBiased:criticalKreise_new`,
-               `b_logConAlleBiased:criticalQuadrate_new`,
-               b_logConAlleUnbiased_new,
-               `b_logConAlleUnbiased:criticalKreise_new`,
-               `b_logConAlleUnbiased:criticalQuadrate_new`,
-               b_logConAlleFalse_new,
-               `b_logConAlleFalse:criticalKreise_new`, 
-               `b_logConAlleFalse:criticalQuadrate_new`) %>%
-  mutate(.variable = factor(x = .variable, 
-         levels = c("b_logConAlleBiased_new",
-               "b_logConAlleBiased:criticalKreise_new",
-               "b_logConAlleBiased:criticalQuadrate_new",
-               "b_logConAlleUnbiased_new",
-               "b_logConAlleUnbiased:criticalKreise_new",
-               "b_logConAlleUnbiased:criticalQuadrate_new",
-               "b_logConAlleFalse_new",
-               "b_logConAlleFalse:criticalKreise_new", 
-               "b_logConAlleFalse:criticalQuadrate_new",
-               "b_logConAlleInfelict_new",
-               "b_logConAlleInfelict:criticalKreise_new", 
-               "b_logConAlleInfelict:criticalQuadrate_new"))) %>% 
-  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
-  stat_halfeye(.width = c(.90, .95), alpha = .6) +
-  geom_pointinterval(alpha = .4) +
-  scale_y_discrete(labels = c('Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate')) +
-  theme_minimal() +
-  theme(axis.title.x = element_blank(), 
-        axis.title.y = element_blank(),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 12),
-        plot.title = element_text(face = "bold",
-                                  size = 14,
-                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
-        legend.position = "none",
-        panel.grid.major.y = element_blank(), 
-        axis.text.x = element_text(face = "bold", 
-                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        axis.text.y = element_text(face = "bold", 
-                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
-  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
-                                 c(3,3,3,3)),
-                    breaks = c("b_logConAlleBiased_new",
-                               "b_logConAlleUnbiased_new",
-                               "b_logConAlleFalse_new"),
-                    labels = c("Biased",
-                               "Unbiased",
-                               "False")) +
-  ggtitle("Alle\nSemantic")
+d2Logic %>%
+  mutate(Trial = factor(trial_name, labels = c("1-21",
+                                               "22-42",
+                                               "43-63",
+                                               "64-84"))) %>% 
+  filter(Region == "SHAPE") %>% 
+  group_by(logCon, Trial) %>% 
+  summarize(mean_RT = mean((RT))) %>% 
+  ungroup() %>% 
+  filter(str_detect(logCon, "iased")) %>% 
+  pivot_wider(id_cols = Trial, names_from = logCon, values_from = mean_RT) %>% 
+  mutate(
+    Einige = `Einige (Unbiased)` - `Einige (Biased)`,
+    Alle = `Alle (Unbiased)` - `Alle (Biased)`
+  ) %>% 
+  kable(escape = F, align = "c") %>%
+  kable_styling(latex_options = "striped", full_width = F) %>% 
+  add_header_above(c(" " = 1, "Condition" = 4, "Effect" = 2))
 
-m_crit_alle_mix <- RT_SHAPE_respond_crit %>%
-  spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
-               b_respond_typeMixed,
-               `b_respond_typeMixed:criticalKreise`,
-               `b_respond_typeMixed:criticalQuadrate`,
-               b_logConAlleBiased,
-               `b_logConAlleBiased:criticalKreise`, 
-               `b_logConAlleBiased:criticalQuadrate`,
-               `b_logConAlleBiased:respond_typeMixed`,
-               `b_logConAlleBiased:respond_typeMixed:criticalKreise`, 
-               `b_logConAlleBiased:respond_typeMixed:criticalQuadrate`,
-               b_logConAlleUnbiased,
-               `b_logConAlleUnbiased:criticalKreise`,
-               `b_logConAlleUnbiased:criticalQuadrate`,
-               `b_logConAlleUnbiased:respond_typeMixed`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalKreise`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate`,
-               b_logConAlleFalse,
-               `b_logConAlleFalse:criticalKreise`, 
-               `b_logConAlleFalse:criticalQuadrate`,
-               `b_logConAlleFalse:respond_typeMixed`,
-               `b_logConAlleFalse:respond_typeMixed:criticalKreise`, 
-               `b_logConAlleFalse:respond_typeMixed:criticalQuadrate`) %>%
-  mutate(`b_logConAlleBiased:respond_typeMixed_new` = b_Intercept + b_logConAlleBiased + b_respond_typeMixed + `b_logConAlleBiased:respond_typeMixed`,
-         `b_logConAlleBiased:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConAlleBiased + b_criticalKreise + `b_logConAlleBiased:respond_typeMixed` + `b_logConAlleBiased:criticalKreise` + `b_respond_typeMixed:criticalKreise` + `b_logConAlleBiased:respond_typeMixed:criticalKreise`,
-         `b_logConAlleBiased:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConAlleBiased + b_criticalQuadrate + `b_logConAlleBiased:respond_typeMixed` + `b_logConAlleBiased:criticalQuadrate` + `b_respond_typeMixed:criticalQuadrate` + `b_logConAlleBiased:respond_typeMixed:criticalQuadrate`,
-         `b_logConAlleUnbiased:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typeMixed`,
-         `b_logConAlleUnbiased:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + b_criticalKreise + `b_logConAlleUnbiased:criticalKreise` + `b_logConAlleUnbiased:respond_typeMixed` + `b_respond_typeMixed:criticalKreise` + `b_logConAlleUnbiased:respond_typeMixed:criticalKreise`,
-         `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + b_criticalQuadrate + `b_logConAlleUnbiased:criticalQuadrate` + `b_logConAlleUnbiased:respond_typeMixed` + `b_respond_typeMixed:criticalQuadrate` + `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate`,
-         `b_logConAlleFalse:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + `b_logConAlleFalse:respond_typeMixed`,
-         `b_logConAlleFalse:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + b_criticalKreise + `b_logConAlleFalse:criticalKreise` + `b_logConAlleFalse:respond_typeMixed` + `b_respond_typeMixed:criticalKreise` + `b_logConAlleFalse:respond_typeMixed:criticalKreise`,
-         `b_logConAlleFalse:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + b_criticalQuadrate + `b_logConAlleFalse:criticalQuadrate` + `b_logConAlleFalse:respond_typeMixed` + `b_respond_typeMixed:criticalQuadrate` + `b_logConAlleFalse:respond_typeMixed:criticalQuadrate`) %>%
-  gather_draws(`b_logConAlleBiased:respond_typeMixed_new`,
-               `b_logConAlleBiased:respond_typeMixed:criticalKreise_new`, 
-               `b_logConAlleBiased:respond_typeMixed:criticalQuadrate_new`,
-               `b_logConAlleUnbiased:respond_typeMixed_new`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalKreise_new`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate_new`,
-               `b_logConAlleFalse:respond_typeMixed_new`,
-               `b_logConAlleFalse:respond_typeMixed:criticalKreise_new`, 
-               `b_logConAlleFalse:respond_typeMixed:criticalQuadrate_new`) %>%
-  mutate(.variable = factor(x = .variable, 
-         levels = c("b_logConAlleBiased:respond_typeMixed_new",
-               "b_logConAlleBiased:respond_typeMixed:criticalKreise_new", 
-               "b_logConAlleBiased:respond_typeMixed:criticalQuadrate_new",
-               "b_logConAlleUnbiased:respond_typeMixed_new",
-               "b_logConAlleUnbiased:respond_typeMixed:criticalKreise_new",
-               "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate_new",
-               "b_logConAlleFalse:respond_typeMixed_new",
-               "b_logConAlleFalse:respond_typeMixed:criticalKreise_new", 
-               "b_logConAlleFalse:respond_typeMixed:criticalQuadrate_new"))) %>% 
-  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
-  stat_halfeye(.width = c(.90, .95), alpha = .6) +
-  geom_pointinterval(alpha = .4) +
-  theme_minimal() +
-  theme(axis.title.x = element_blank(), 
-        axis.title.y = element_blank(),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 12),
-        plot.title = element_text(face = "bold",
-                                  size = 14,
-                                  hjust = .5,
-                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
-        legend.position = "none",
-        panel.grid.major.y = element_blank(), 
-        axis.text.x = element_text(face = "bold", 
-                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        axis.text.y = element_blank()) +
-  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
-                                 c(3,3,3,3)),
-                    breaks = c("b_logConAlleBiased:respond_typeMixed_new",
-                               "b_logConAlleUnbiased:respond_typeMixed_new",
-                               "b_logConAlleFalse:respond_typeMixed_new"),
-                    labels = c("Biased",
-                               "Unbiased",
-                               "False")) +
-  ggtitle("\nMixed")
 
-m_crit_alle_prag <- RT_SHAPE_respond_crit %>%
-  spread_draws(b_Intercept,
-               b_criticalKreise,
-               b_criticalQuadrate,
-               b_respond_typeMixed,
-               `b_respond_typeMixed:criticalKreise`,
-               `b_respond_typeMixed:criticalQuadrate`,
-               b_logConAlleBiased,
-               `b_logConAlleBiased:criticalKreise`, 
-               `b_logConAlleBiased:criticalQuadrate`,
-               `b_logConAlleBiased:respond_typeMixed`,
-               `b_logConAlleBiased:respond_typeMixed:criticalKreise`, 
-               `b_logConAlleBiased:respond_typeMixed:criticalQuadrate`,
-               b_logConAlleUnbiased,
-               `b_logConAlleUnbiased:criticalKreise`,
-               `b_logConAlleUnbiased:criticalQuadrate`,
-               `b_logConAlleUnbiased:respond_typeMixed`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalKreise`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate`,
-               b_logConAlleFalse,
-               `b_logConAlleFalse:criticalKreise`, 
-               `b_logConAlleFalse:criticalQuadrate`,
-               `b_logConAlleFalse:respond_typeMixed`,
-               `b_logConAlleFalse:respond_typeMixed:criticalKreise`, 
-               `b_logConAlleFalse:respond_typeMixed:criticalQuadrate`) %>%
-  mutate(`b_logConAlleBiased:respond_typeMixed_new` = b_Intercept + b_logConAlleBiased + b_respond_typeMixed + `b_logConAlleBiased:respond_typeMixed`,
-         `b_logConAlleBiased:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConAlleBiased + b_criticalKreise + `b_logConAlleBiased:respond_typeMixed` + `b_logConAlleBiased:criticalKreise` + `b_respond_typeMixed:criticalKreise` + `b_logConAlleBiased:respond_typeMixed:criticalKreise`,
-         `b_logConAlleBiased:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConAlleBiased + b_criticalQuadrate + `b_logConAlleBiased:respond_typeMixed` + `b_logConAlleBiased:criticalQuadrate` + `b_respond_typeMixed:criticalQuadrate` + `b_logConAlleBiased:respond_typeMixed:criticalQuadrate`,
-         `b_logConAlleUnbiased:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typeMixed`,
-         `b_logConAlleUnbiased:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + b_criticalKreise + `b_logConAlleUnbiased:criticalKreise` + `b_logConAlleUnbiased:respond_typeMixed` + `b_respond_typeMixed:criticalKreise` + `b_logConAlleUnbiased:respond_typeMixed:criticalKreise`,
-         `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + b_criticalQuadrate + `b_logConAlleUnbiased:criticalQuadrate` + `b_logConAlleUnbiased:respond_typeMixed` + `b_respond_typeMixed:criticalQuadrate` + `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate`,
-         `b_logConAlleFalse:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + `b_logConAlleFalse:respond_typeMixed`,
-         `b_logConAlleFalse:respond_typeMixed:criticalKreise_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + b_criticalKreise + `b_logConAlleFalse:criticalKreise` + `b_logConAlleFalse:respond_typeMixed` + `b_respond_typeMixed:criticalKreise` + `b_logConAlleFalse:respond_typeMixed:criticalKreise`,
-         `b_logConAlleFalse:respond_typeMixed:criticalQuadrate_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + b_criticalQuadrate + `b_logConAlleFalse:criticalQuadrate` + `b_logConAlleFalse:respond_typeMixed` + `b_respond_typeMixed:criticalQuadrate` + `b_logConAlleFalse:respond_typeMixed:criticalQuadrate`) %>%
-  gather_draws(`b_logConAlleBiased:respond_typeMixed_new`,
-               `b_logConAlleBiased:respond_typeMixed:criticalKreise_new`, 
-               `b_logConAlleBiased:respond_typeMixed:criticalQuadrate_new`,
-               `b_logConAlleUnbiased:respond_typeMixed_new`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalKreise_new`,
-               `b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate_new`,
-               `b_logConAlleFalse:respond_typeMixed_new`,
-               `b_logConAlleFalse:respond_typeMixed:criticalKreise_new`, 
-               `b_logConAlleFalse:respond_typeMixed:criticalQuadrate_new`) %>%
-  mutate(.variable = factor(x = .variable, 
-         levels = c("b_logConAlleBiased:respond_typeMixed_new",
-               "b_logConAlleBiased:respond_typeMixed:criticalKreise_new", 
-               "b_logConAlleBiased:respond_typeMixed:criticalQuadrate_new",
-               "b_logConAlleUnbiased:respond_typeMixed_new",
-               "b_logConAlleUnbiased:respond_typeMixed:criticalKreise_new",
-               "b_logConAlleUnbiased:respond_typeMixed:criticalQuadrate_new",
-               "b_logConAlleFalse:respond_typeMixed_new",
-               "b_logConAlleFalse:respond_typeMixed:criticalKreise_new", 
-               "b_logConAlleFalse:respond_typeMixed:criticalQuadrate_new"))) %>% 
-  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
-  stat_halfeye(.width = c(.90, .95), alpha = .6) +
-  geom_pointinterval(alpha = .4) +
-  scale_y_discrete(labels = c('Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate',
-                              'Dreiecke', 
-                              'Kreise', 
-                              'Quadrate'),
-                   position = "right") +
-  theme_minimal() +
-  theme(axis.title.x = element_blank(), 
-        axis.title.y = element_blank(),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 12),
-        plot.title = element_text(face = "bold",
-                                  size = 14,
-                                  hjust = 1,
-                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
-        legend.position = "none",
-        panel.grid.major.y = element_blank(), 
-        axis.text.x = element_text(face = "bold", 
-                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
-        axis.text.y = element_text(face = "bold", 
-                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
-  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
-                                 c(3,3,3,3)),
-                    breaks = c("b_logConAlleBiased:respond_typeMixed_new",
-                               "b_logConAlleUnbiased:respond_typeMixed_new",
-                               "b_logConAlleFalse:respond_typeMixed_new"),
-                    labels = c("Biased",
-                               "Unbiased",
-                               "False")) +
-  ggtitle("\nPragmatic")
+```
 
-ggarrange(m_crit_alle_sem, m_crit_alle_mix, m_crit_alle_prag, common.legend = T, legend = "bottom", ncol = 3)
+Empirical means in numbers for relevant conditions and numerical effects for log(RTs):
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+d2Logic %>%
+  mutate(Trial = factor(trial_name, labels = c("1-21",
+                                               "22-42",
+                                               "43-63",
+                                               "64-84"))) %>% 
+  filter(Region == "SHAPE") %>% 
+  group_by(logCon, Trial) %>% 
+  summarize(mean_RT = mean(log(RT))) %>% 
+  ungroup() %>% 
+  filter(str_detect(logCon, "iased")) %>% 
+  pivot_wider(id_cols = Trial, names_from = logCon, values_from = mean_RT) %>% 
+  mutate(
+    Einige = `Einige (Unbiased)` - `Einige (Biased)`,
+    Alle = `Alle (Unbiased)` - `Alle (Biased)`
+  )  %>% 
+  kable(escape = F, align = "c") %>%
+  kable_styling(latex_options = "striped", full_width = F) %>% 
+  add_header_above(c(" " = 1, "Condition" = 4, "Effect" = 2))
 
 ```
 
@@ -1008,61 +519,33 @@ Posterior probabilities of point hypotheses assume equal prior probabilities.
 
 ```{r fig.align='center', echo=FALSE, warning=FALSE, message=FALSE}
 
-# Effect 'Einige' - Dreiecke
-einige_drei <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConEinigeUnbiased > Intercept")
+hypotheses <- 
+  c("Intercept + logConEinigeUnbiased > Intercept",
+    "Intercept + logConEinigeUnbiased + trial_nametask_three_2 + logConEinigeUnbiased:trial_nametask_three_2 > Intercept + trial_nametask_three_2",
+    "Intercept + logConEinigeUnbiased + trial_nametask_three_3 + logConEinigeUnbiased:trial_nametask_three_3 > Intercept + trial_nametask_three_3",
+    "Intercept + logConEinigeUnbiased + trial_nametask_three_4 + logConEinigeUnbiased:trial_nametask_three_4 > Intercept + trial_nametask_three_4",
+    "Intercept + logConAlleUnbiased > Intercept + logConAlleBiased",
+    "Intercept + logConAlleUnbiased + trial_nametask_three_2 + logConAlleUnbiased:trial_nametask_three_2 > Intercept + logConAlleBiased + trial_nametask_three_2 + logConAlleBiased:trial_nametask_three_2",
+    "Intercept + logConAlleUnbiased + trial_nametask_three_3 + logConAlleUnbiased:trial_nametask_three_3 > Intercept + logConAlleBiased + trial_nametask_three_3 + logConAlleBiased:trial_nametask_three_3",
+    "Intercept + logConAlleUnbiased + trial_nametask_three_4 + logConAlleUnbiased:trial_nametask_three_4 > Intercept + logConAlleBiased + trial_nametask_three_4 + logConAlleBiased:trial_nametask_three_4")
 
-einige_drei$hypothesis %>% 
-  mutate(Hypothesis = "[Dreiecke] Einige Unbiased > [Dreiecke] Einige Biased") %>% 
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
+tests <- brms::hypothesis(RT_SHAPE_trial, hypotheses)
 
-# Effect 'Einige' - Kreise
-einige_kreis <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConEinigeUnbiased + criticalKreise + logConEinigeUnbiased:criticalKreise > Intercept + criticalKreise ")
-
-einige_kreis$hypothesis %>% 
-  mutate(Hypothesis = "[Kreise] Einige Unbiased > [Kreise] Einige Biased") %>% 
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Einige' - Quadrate
-einige_quad <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConEinigeUnbiased + criticalQuadrate + logConEinigeUnbiased:criticalQuadrate > Intercept + criticalQuadrate ")
-
-einige_quad$hypothesis %>%
-  mutate(Hypothesis = "[Quadrate] Einige Unbiased > [Quadrate] Einige Biased") %>% 
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Alle' - Dreiecke
-alle_drei <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConAlleUnbiased > Intercept + logConAlleBiased")
-
-alle_drei$hypothesis %>%
-  mutate(Hypothesis = "[Dreiecke] Alle Unbiased > [Dreiecke] Alle Biased") %>% 
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Alle' - Kreise
-alle_krei <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConAlleUnbiased + criticalKreise + logConAlleUnbiased:criticalKreise > Intercept + logConAlleBiased + criticalKreise + logConAlleBiased:criticalKreise")
-
-alle_krei$hypothesis %>% 
-  mutate(Hypothesis = "[Kreise] Alle Unbiased > [Kreise] Alle Biased") %>% 
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Alle' - Quadrate
-alle_quad <- brms::hypothesis(RT_SHAPE_crit, "Intercept + logConAlleUnbiased + criticalQuadrate + logConAlleUnbiased:criticalQuadrate > Intercept + logConAlleBiased + criticalQuadrate + logConAlleBiased:criticalQuadrate")
-
-alle_quad$hypothesis %>%
-  mutate(Hypothesis = "[Quadrate] Alle Unbiased > [Quadrate] Alle Biased") %>% 
+tests$hypothesis %>%
+  mutate(Hypothesis = case_when(Hypothesis == "(Intercept+logConEinigeUnbiased)-(Intercept) > 0" ~ "[1-21] Einige Unbiased > [1-21] Einige Biased",
+                        Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_2+logConEinigeUnbiased:trial_nametask_three_2)-(Intercept+trial_nametask_three_2) > 0" ~ "[22-42] Einige Unbiased > [22-42] Einige Biased",
+                      Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_3+logConEinigeUnbiased:trial_nametask_three_3)-(Intercept+trial_nametask_three_3) > 0"  ~ "[43-63] Einige Unbiased > [43-63] Einige Biased",
+                      Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_4+logConEinigeUnbiased:trial_nametask_three_4)-(Intercept+trial_nametask_three_4) > 0" ~ "[64-84] Einige Unbiased > [64-84] Einige Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased)-(Intercept+logConAlleBiased) > 0" ~ "[1-21] Alle Unbiased > [1-21] Alle Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased+trial_nametask_three_2+logConAlleUnbiased:trial_nametask_three_2)-(Intercept+logConAlleBiased+trial_nametask_three_2+logConAlleBiased:trial_nametask_three_2) > 0" ~ "[22-42] Alle Unbiased > [22-42] Alle Biased",
+                   Hypothesis ==   "(Intercept+logConAlleUnbiased+trial_nametask_three_3+logConAlleUnbiased:trial_nametask_three_3)-(Intercept+logConAlleBiased+trial_nametask_three_3+logConAlleBiased:trial_nametask_three_3) > 0" ~ "[43-63] Alle Unbiased > [43-63] Alle Biased",
+                    Hypothesis ==  "(Intercept+logConAlleUnbiased+trial_nametask_three_4+logConAlleUnbiased:trial_nametask_three_4)-(Intercept+logConAlleBiased+trial_nametask_three_4+logConAlleBiased:trial_nametask_three_4) > 0" ~ "[64-84] Alle Unbiased > [64-84] Alle Biased")) %>% 
   kable(escape = F, align = "c") %>%
   kable_styling(latex_options = "striped")
 
 ```
 
-***
-
-### Block effects
-
-#### Model 1 (condition x block)
+#### Model (condition x block)
 
 ```{r fig.align='center', fig.height=6, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -1269,13 +752,796 @@ m_trial_alle <- RT_SHAPE_trial %>%
                                 "False")) +
   ggtitle("Alle")
 
-ggarrange(m_trial_einige, m_trial_alle, common.legend = T, legend = "bottom")
+# `est-block` <- 
+  ggarrange(m_trial_einige, m_trial_alle, common.legend = T, legend = "bottom")
+
+# ggsave("est-block.png", height = 6, width = 10, dpi = "retina")
 
 ```
 
-#### Model 2 (condition x pragmatic profile x block)
+***
+
+### Pragmatic profile effects
+
+#### Hypothesis tests
+
+'CI': 90%-CI for one-sided and 95%-CI for two-sided hypotheses.
+
+'*': For one-sided hypotheses, the posterior probability exceeds 95%; for two-sided hypotheses, the value tested against lies outside the 95%-CI.
+
+Posterior probabilities of point hypotheses assume equal prior probabilities.
+
+```{r fig.align='center', echo=FALSE, warning=FALSE, message=FALSE}
+
+hypotheses <- 
+  c("Intercept + logConEinigeUnbiased > Intercept",
+    "Intercept + logConEinigeUnbiased + respond_typePragmatic + logConEinigeUnbiased:respond_typePragmatic > Intercept + respond_typePragmatic",
+    "Intercept + logConEinigeUnbiased + respond_typeMixed + logConEinigeUnbiased:respond_typeMixed > Intercept + respond_typeMixed",
+    "Intercept + logConAlleUnbiased > Intercept + logConAlleBiased",
+    "Intercept + logConAlleUnbiased + respond_typePragmatic + logConAlleUnbiased:respond_typePragmatic > Intercept + logConAlleBiased + respond_typePragmatic + logConAlleBiased:respond_typePragmatic",
+    "Intercept + logConAlleUnbiased + respond_typeMixed + logConAlleUnbiased:respond_typeMixed > Intercept + logConAlleBiased + respond_typeMixed + logConAlleBiased:respond_typeMixed")
+
+tests <- brms::hypothesis(RT_SHAPE_respond, hypotheses)
+
+tests$hypothesis %>%
+  mutate(Hypothesis = case_when(Hypothesis == "(Intercept+logConEinigeUnbiased)-(Intercept) > 0" ~ "[semantic] Einige Unbiased > [semantic] Einige Biased",
+                        Hypothesis == "(Intercept+logConEinigeUnbiased+respond_typePragmatic+logConEinigeUnbiased:respond_typePragmatic)-(Intercept+respond_typePragmatic) > 0" ~ "[pragmatic] Einige Unbiased > [pragmatic] Einige Biased",
+                      Hypothesis == "(Intercept+logConEinigeUnbiased+respond_typeMixed+logConEinigeUnbiased:respond_typeMixed)-(Intercept+respond_typeMixed) > 0"  ~ "[mixed] Einige Unbiased > [mixed] Einige Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased)-(Intercept+logConAlleBiased) > 0" ~ "[semantic] Alle Unbiased > [semantic] Alle Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased+respond_typePragmatic+logConAlleUnbiased:respond_typePragmatic)-(Intercept+logConAlleBiased+respond_typePragmatic+logConAlleBiased:respond_typePragmatic) > 0" ~ "[pragmatic] Alle Unbiased > [pragmatic] Alle Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased+respond_typeMixed+logConAlleUnbiased:respond_typeMixed)-(Intercept+logConAlleBiased+respond_typeMixed+logConAlleBiased:respond_typeMixed) > 0" ~ "[mixed] Alle Unbiased > [mixed] Alle Biased")) %>% 
+  kable(escape = F, align = "c") %>%
+  kable_styling(latex_options = "striped")
+
+```
+
+#### Model 1 (condition x pragmatic profile)
 
 ```{r fig.align='center', fig.height=6, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
+
+m_respond_einige <- RT_SHAPE_respond %>%
+  spread_draws(b_Intercept,
+               b_logConEinigeUnbiased,
+               b_logConEinigeInfelict,
+               b_logConEinigeFalse,
+               b_respond_typePragmatic,
+               `b_logConEinigeUnbiased:respond_typePragmatic`,
+               `b_logConEinigeInfelict:respond_typePragmatic`,
+               `b_logConEinigeFalse:respond_typePragmatic`,
+               b_respond_typeMixed,
+               `b_logConEinigeUnbiased:respond_typeMixed`,
+               `b_logConEinigeInfelict:respond_typeMixed`,
+               `b_logConEinigeFalse:respond_typeMixed`) %>%
+  mutate(b_logConEinigeUnbiased_new = b_Intercept + b_logConEinigeUnbiased,
+         b_logConEinigeInfelict_new = b_Intercept + b_logConEinigeInfelict,
+         b_logConEinigeFalse_new = b_Intercept + b_logConEinigeFalse,
+         b_respond_typePragmatic_new = b_Intercept + b_respond_typePragmatic,
+         `b_logConEinigeUnbiased:respond_typePragmatic_new` = b_Intercept + b_logConEinigeUnbiased + b_respond_typePragmatic + `b_logConEinigeUnbiased:respond_typePragmatic`,
+         `b_logConEinigeInfelict:respond_typePragmatic_new` = b_Intercept + b_logConEinigeInfelict + b_respond_typePragmatic + `b_logConEinigeInfelict:respond_typePragmatic`,
+         `b_logConEinigeFalse:respond_typePragmatic_new` = b_Intercept + b_logConEinigeFalse + b_respond_typePragmatic + `b_logConEinigeFalse:respond_typePragmatic`,
+         b_respond_typeMixed_new = b_Intercept + b_respond_typeMixed,
+         `b_logConEinigeUnbiased:respond_typeMixed_new` = b_Intercept + b_logConEinigeUnbiased + b_respond_typeMixed + `b_logConEinigeUnbiased:respond_typeMixed`,
+         `b_logConEinigeInfelict:respond_typeMixed_new` = b_Intercept + b_logConEinigeInfelict + b_respond_typeMixed + `b_logConEinigeInfelict:respond_typeMixed`,
+         `b_logConEinigeFalse:respond_typeMixed_new` = b_Intercept + b_logConEinigeFalse + b_respond_typeMixed + `b_logConEinigeFalse:respond_typeMixed`) %>%
+  gather_draws(b_Intercept,
+               b_logConEinigeUnbiased_new, 
+           b_logConEinigeFalse_new,
+           b_logConEinigeInfelict_new, 
+           b_respond_typePragmatic_new,
+           `b_logConEinigeUnbiased:respond_typePragmatic_new`,
+           `b_logConEinigeFalse:respond_typePragmatic_new`,
+           `b_logConEinigeInfelict:respond_typePragmatic_new`,
+           b_respond_typeMixed_new,
+           `b_logConEinigeUnbiased:respond_typeMixed_new`,
+           `b_logConEinigeFalse:respond_typeMixed_new`,
+            `b_logConEinigeInfelict:respond_typeMixed_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_Intercept",
+                    "b_logConEinigeUnbiased_new", 
+           "b_logConEinigeFalse_new",
+           "b_logConEinigeInfelict_new", 
+           "b_respond_typePragmatic_new",
+           "b_logConEinigeUnbiased:respond_typePragmatic_new",
+           "b_logConEinigeFalse:respond_typePragmatic_new",
+           "b_logConEinigeInfelict:respond_typePragmatic_new",
+           "b_respond_typeMixed_new",
+           "b_logConEinigeUnbiased:respond_typeMixed_new",
+           "b_logConEinigeFalse:respond_typeMixed_new",
+           "b_logConEinigeInfelict:respond_typeMixed_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  scale_y_discrete(labels = c('[semantic] Biased',
+                              'Unbiased', 
+                              'False',
+                              'Infelict', 
+                              '[pragmatic] Biased',
+                              'Unbiased',
+                              'False',
+                              'Infelict', 
+                              '[mixed] Biased',
+                              'Unbiased',
+                              'False',
+                              'Infelict')) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
+                                times = 3),
+                    breaks = c("b_Intercept",
+                               "b_logConEinigeUnbiased_new",
+                               "b_logConEinigeFalse_new",
+                               "b_logConEinigeInfelict_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False",
+                               "Infelicitous")) +
+  ggtitle("Einige")
+
+m_respond_alle <- RT_SHAPE_respond %>%
+  spread_draws(b_Intercept,
+               b_logConAlleBiased,
+               b_logConAlleUnbiased,
+               b_logConAlleFalse,
+               b_respond_typePragmatic,
+               `b_logConAlleBiased:respond_typePragmatic`,
+               `b_logConAlleUnbiased:respond_typePragmatic`,
+               `b_logConAlleFalse:respond_typePragmatic`,
+               b_respond_typeMixed,
+               `b_logConAlleBiased:respond_typeMixed`,
+               `b_logConAlleUnbiased:respond_typeMixed`,
+               `b_logConAlleFalse:respond_typeMixed`) %>%
+  mutate(b_logConAlleBiased_new = b_Intercept + b_logConAlleBiased,
+         b_logConAlleUnbiased_new = b_Intercept + b_logConAlleUnbiased,
+         b_logConAlleFalse_new = b_Intercept + b_logConAlleFalse,
+         b_respond_typePragmatic_new = b_Intercept + b_respond_typePragmatic,
+         `b_logConAlleBiased:respond_typePragmatic_new` = b_Intercept + b_logConAlleBiased + b_respond_typePragmatic + `b_logConAlleBiased:respond_typePragmatic`,
+         `b_logConAlleUnbiased:respond_typePragmatic_new` = b_Intercept + b_logConAlleUnbiased + b_respond_typePragmatic + `b_logConAlleUnbiased:respond_typePragmatic`,
+         `b_logConAlleFalse:respond_typePragmatic_new` = b_Intercept + b_logConAlleFalse + b_respond_typePragmatic + `b_logConAlleFalse:respond_typePragmatic`,
+         b_respond_typeMixed_new = b_Intercept + b_respond_typeMixed,
+         `b_logConAlleBiased:respond_typeMixed_new` = b_Intercept + b_logConAlleBiased + b_respond_typeMixed + `b_logConAlleBiased:respond_typeMixed`,
+         `b_logConAlleUnbiased:respond_typeMixed_new` = b_Intercept + b_logConAlleUnbiased + b_respond_typeMixed + `b_logConAlleUnbiased:respond_typeMixed`,
+         `b_logConAlleFalse:respond_typeMixed_new` = b_Intercept + b_logConAlleFalse + b_respond_typeMixed + `b_logConAlleFalse:respond_typeMixed`) %>%
+  gather_draws(b_logConAlleBiased_new,
+               b_logConAlleUnbiased_new, 
+           b_logConAlleFalse_new,
+           `b_logConAlleBiased:respond_typePragmatic_new`,
+           `b_logConAlleUnbiased:respond_typePragmatic_new`,
+           `b_logConAlleFalse:respond_typePragmatic_new`,
+           `b_logConAlleBiased:respond_typeMixed_new`,
+           `b_logConAlleUnbiased:respond_typeMixed_new`,
+           `b_logConAlleFalse:respond_typeMixed_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_logConAlleBiased_new",
+                    "b_logConAlleUnbiased_new",
+                    "b_logConAlleFalse_new",
+                    "b_logConAlleBiased:respond_typePragmatic_new",
+                    "b_logConAlleUnbiased:respond_typePragmatic_new",
+                    "b_logConAlleFalse:respond_typePragmatic_new",
+                    "b_logConAlleBiased:respond_typeMixed_new",
+                    "b_logConAlleUnbiased:respond_typeMixed_new",
+                    "b_logConAlleFalse:respond_typeMixed_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  scale_y_discrete(labels = c('[semantic] Biased',
+                              'Unbiased', 
+                              'False',
+                              '[pragmatic] Biased',
+                              'Unbiased',
+                              'False',
+                              '[mixed] Biased',
+                              'Unbiased',
+                              'False'),
+                   position = "right") +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        plot.title = element_text(hjust = 1,
+                                  face = "bold",
+                                  size = 14,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+   scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B"), times = 3),
+                     breaks = c("b_logConAlleBiased_new",
+                                "b_logConAlleUnbiased_new",
+                                "b_logConAlleFalse_new"),
+                     labels = c("Biased",
+                                "Unbiased",
+                                "False")) +
+  ggtitle("Alle")
+
+# `est-respond` <-
+  ggarrange(m_respond_einige, m_respond_alle, common.legend = T, legend = "bottom")
+
+# ggsave("est-respond.png", height = 6, width = 10, dpi = "retina")
+
+```
+
+#### Model 2 (condition x pragmatic profile x critical word)
+
+```{r fig.align='center', fig.height=10, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
+
+m_crit_einige_sem <- RT_SHAPE_respond_crit %>%
+  spread_draws(b_Intercept,
+               b_critical1,
+               b_critical2,
+               b_logConEinigeUnbiased,
+               `b_logConEinigeUnbiased:critical1`,
+               `b_logConEinigeUnbiased:critical2`,
+               b_logConEinigeInfelict,
+               `b_logConEinigeInfelict:critical1`, 
+               `b_logConEinigeInfelict:critical2`,
+               b_logConEinigeFalse,
+               `b_logConEinigeFalse:critical1`, 
+               `b_logConEinigeFalse:critical2`) %>%
+  mutate(b_critical1_new = b_Intercept + b_critical2,
+         b_critical2_new = b_Intercept + b_critical1,
+         b_logConEinigeUnbiased_new = b_Intercept + b_logConEinigeUnbiased,
+         `b_logConEinigeUnbiased:critical1_new` = b_Intercept + b_logConEinigeUnbiased + b_critical2 + `b_logConEinigeUnbiased:critical2`,
+         `b_logConEinigeUnbiased:critical2_new` = b_Intercept + b_logConEinigeUnbiased + b_critical1 + `b_logConEinigeUnbiased:critical1`,
+         b_logConEinigeInfelict_new = b_Intercept + b_logConEinigeInfelict,
+         `b_logConEinigeInfelict:critical1_new` = b_Intercept + b_logConEinigeInfelict + b_critical2 + `b_logConEinigeInfelict:critical2`,
+         `b_logConEinigeInfelict:critical2_new` = b_Intercept + b_logConEinigeInfelict + b_critical1 + `b_logConEinigeInfelict:critical1`,
+         b_logConEinigeFalse_new = b_Intercept + b_logConEinigeFalse,
+         `b_logConEinigeFalse:critical1_new` = b_Intercept + b_logConEinigeFalse + b_critical2 + `b_logConEinigeFalse:critical2`,
+         `b_logConEinigeFalse:critical2_new` = b_Intercept + b_logConEinigeFalse + b_critical1 + `b_logConEinigeFalse:critical1`) %>%
+  gather_draws(b_Intercept,
+               b_critical1_new,
+               b_critical2_new,
+               b_logConEinigeUnbiased_new,
+               `b_logConEinigeUnbiased:critical1_new`,
+               `b_logConEinigeUnbiased:critical2_new`,
+               b_logConEinigeInfelict_new,
+               `b_logConEinigeInfelict:critical1_new`, 
+               `b_logConEinigeInfelict:critical2_new`,
+               b_logConEinigeFalse_new,
+               `b_logConEinigeFalse:critical1_new`, 
+               `b_logConEinigeFalse:critical2_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_Intercept",
+               "b_critical1_new",
+               "b_critical2_new",
+               "b_logConEinigeUnbiased_new",
+               "b_logConEinigeUnbiased:critical1_new",
+               "b_logConEinigeUnbiased:critical2_new",
+               "b_logConEinigeFalse_new",
+               "b_logConEinigeFalse:critical1_new", 
+               "b_logConEinigeFalse:critical2_new",
+               "b_logConEinigeInfelict_new",
+               "b_logConEinigeInfelict:critical1_new", 
+               "b_logConEinigeInfelict:critical2_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  scale_y_discrete(labels = c('Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate')) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
+                                 c(3,3,3,3)),
+                    breaks = c("b_Intercept",
+                               "b_logConEinigeUnbiased_new",
+                               "b_logConEinigeFalse_new",
+                               "b_logConEinigeInfelict_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False",
+                               "Infelicitous")) +
+  ggtitle("Einige\nSemantic")
+
+m_crit_einige_mix <- RT_SHAPE_respond_crit %>%
+  spread_draws(b_Intercept,
+               b_critical1,
+               b_critical2,
+               b_respond_typeMixed,
+               `b_respond_typeMixed:critical1`,
+               `b_respond_typeMixed:critical2`,
+               b_logConEinigeUnbiased,
+               `b_logConEinigeUnbiased:critical1`,
+               `b_logConEinigeUnbiased:critical2`,
+               `b_logConEinigeUnbiased:respond_typeMixed`,
+               `b_logConEinigeUnbiased:respond_typeMixed:critical1`,
+               `b_logConEinigeUnbiased:respond_typeMixed:critical2`,
+               b_logConEinigeInfelict,
+               `b_logConEinigeInfelict:critical1`, 
+               `b_logConEinigeInfelict:critical2`,
+               `b_logConEinigeInfelict:respond_typeMixed`,
+               `b_logConEinigeInfelict:respond_typeMixed:critical1`, 
+               `b_logConEinigeInfelict:respond_typeMixed:critical2`,
+               b_logConEinigeFalse,
+               `b_logConEinigeFalse:critical1`, 
+               `b_logConEinigeFalse:critical2`,
+               `b_logConEinigeFalse:respond_typeMixed`,
+               `b_logConEinigeFalse:respond_typeMixed:critical1`, 
+               `b_logConEinigeFalse:respond_typeMixed:critical2`) %>%
+  mutate(b_respond_typeMixed_new = b_Intercept + b_respond_typeMixed,
+         `b_respond_typeMixed:critical1_new` = b_Intercept + b_respond_typeMixed + b_critical2 + `b_respond_typeMixed:critical2`,
+         `b_respond_typeMixed:critical2_new` = b_Intercept + b_respond_typeMixed + b_critical1 + `b_respond_typeMixed:critical1`,
+         `b_logConEinigeUnbiased:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typeMixed`,
+         `b_logConEinigeUnbiased:respond_typeMixed:critical1_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeUnbiased + b_critical2 + `b_logConEinigeUnbiased:critical2` + `b_logConEinigeUnbiased:respond_typeMixed` + `b_respond_typeMixed:critical2` + `b_logConEinigeUnbiased:respond_typeMixed:critical2`,
+         `b_logConEinigeUnbiased:respond_typeMixed:critical2_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeUnbiased + b_critical1 + `b_logConEinigeUnbiased:critical1` + `b_logConEinigeUnbiased:respond_typeMixed` + `b_respond_typeMixed:critical1` + `b_logConEinigeUnbiased:respond_typeMixed:critical1`,
+         `b_logConEinigeInfelict:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typeMixed`,
+         `b_logConEinigeInfelict:respond_typeMixed:critical1_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeInfelict + b_critical2 + `b_logConEinigeInfelict:critical2` + `b_logConEinigeInfelict:respond_typeMixed` + `b_respond_typeMixed:critical2` + `b_logConEinigeInfelict:respond_typeMixed:critical2`,
+         `b_logConEinigeInfelict:respond_typeMixed:critical2_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeInfelict + b_critical1 + `b_logConEinigeInfelict:critical1` + `b_logConEinigeInfelict:respond_typeMixed` + `b_respond_typeMixed:critical1` + `b_logConEinigeInfelict:respond_typeMixed:critical1`,
+         `b_logConEinigeFalse:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeFalse + `b_logConEinigeFalse:respond_typeMixed`,
+         `b_logConEinigeFalse:respond_typeMixed:critical1_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeFalse + b_critical2 + `b_logConEinigeFalse:critical2` + `b_logConEinigeFalse:respond_typeMixed` + `b_respond_typeMixed:critical2` + `b_logConEinigeFalse:respond_typeMixed:critical2`,
+         `b_logConEinigeFalse:respond_typeMixed:critical2_new` = b_Intercept + b_respond_typeMixed + b_logConEinigeFalse + b_critical1 + `b_logConEinigeFalse:critical1` + `b_logConEinigeFalse:respond_typeMixed` + `b_respond_typeMixed:critical1` + `b_logConEinigeFalse:respond_typeMixed:critical1`) %>%
+  gather_draws(b_respond_typeMixed_new,
+               `b_respond_typeMixed:critical1_new`,
+               `b_respond_typeMixed:critical2_new`,
+               `b_logConEinigeUnbiased:respond_typeMixed_new`,
+               `b_logConEinigeUnbiased:respond_typeMixed:critical1_new`,
+               `b_logConEinigeUnbiased:respond_typeMixed:critical2_new`,
+               `b_logConEinigeInfelict:respond_typeMixed_new`,
+               `b_logConEinigeInfelict:respond_typeMixed:critical1_new`, 
+               `b_logConEinigeInfelict:respond_typeMixed:critical2_new`,
+               `b_logConEinigeFalse:respond_typeMixed_new`,
+               `b_logConEinigeFalse:respond_typeMixed:critical1_new`, 
+               `b_logConEinigeFalse:respond_typeMixed:critical2_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_respond_typeMixed_new",
+               "b_respond_typeMixed:critical1_new",
+               "b_respond_typeMixed:critical2_new",
+               "b_logConEinigeUnbiased:respond_typeMixed_new",
+               "b_logConEinigeUnbiased:respond_typeMixed:critical1_new",
+               "b_logConEinigeUnbiased:respond_typeMixed:critical2_new",
+               "b_logConEinigeFalse:respond_typeMixed_new",
+               "b_logConEinigeFalse:respond_typeMixed:critical1_new", 
+               "b_logConEinigeFalse:respond_typeMixed:critical2_new",
+               "b_logConEinigeInfelict:respond_typeMixed_new",
+               "b_logConEinigeInfelict:respond_typeMixed:critical1_new", 
+               "b_logConEinigeInfelict:respond_typeMixed:critical2_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  hjust = .5,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_blank()) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
+                                 c(3,3,3,3)),
+                    breaks = c("b_respond_typeMixed_new",
+                               "b_logConEinigeUnbiased:respond_typeMixed_new",
+                               "b_logConEinigeFalse:respond_typeMixed_new",
+                               "b_logConEinigeInfelict:respond_typeMixed_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False",
+                               "Infelicitous")) +
+  ggtitle("\nMixed")
+
+m_crit_einige_prag <- RT_SHAPE_respond_crit %>%
+  spread_draws(b_Intercept,
+               b_critical1,
+               b_critical2,
+               b_respond_typePragmatic,
+               `b_respond_typePragmatic:critical1`,
+               `b_respond_typePragmatic:critical2`,
+               b_logConEinigeUnbiased,
+               `b_logConEinigeUnbiased:critical1`,
+               `b_logConEinigeUnbiased:critical2`,
+               `b_logConEinigeUnbiased:respond_typePragmatic`,
+               `b_logConEinigeUnbiased:respond_typePragmatic:critical1`,
+               `b_logConEinigeUnbiased:respond_typePragmatic:critical2`,
+               b_logConEinigeInfelict,
+               `b_logConEinigeInfelict:critical1`, 
+               `b_logConEinigeInfelict:critical2`,
+               `b_logConEinigeInfelict:respond_typePragmatic`,
+               `b_logConEinigeInfelict:respond_typePragmatic:critical1`, 
+               `b_logConEinigeInfelict:respond_typePragmatic:critical2`,
+               b_logConEinigeFalse,
+               `b_logConEinigeFalse:critical1`, 
+               `b_logConEinigeFalse:critical2`,
+               `b_logConEinigeFalse:respond_typePragmatic`,
+               `b_logConEinigeFalse:respond_typePragmatic:critical1`, 
+               `b_logConEinigeFalse:respond_typePragmatic:critical2`) %>%
+  mutate(b_respond_typePragmatic_new = b_Intercept + b_respond_typePragmatic,
+         `b_respond_typePragmatic:critical1_new` = b_Intercept + b_respond_typePragmatic + b_critical2 + `b_respond_typePragmatic:critical2`,
+         `b_respond_typePragmatic:critical2_new` = b_Intercept + b_respond_typePragmatic + b_critical1 + `b_respond_typePragmatic:critical1`,
+         `b_logConEinigeUnbiased:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeUnbiased + `b_logConEinigeUnbiased:respond_typePragmatic`,
+         `b_logConEinigeUnbiased:respond_typePragmatic:critical1_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeUnbiased + b_critical2 + `b_logConEinigeUnbiased:critical2` + `b_logConEinigeUnbiased:respond_typePragmatic` + `b_respond_typePragmatic:critical2` + `b_logConEinigeUnbiased:respond_typePragmatic:critical1`,
+         `b_logConEinigeUnbiased:respond_typePragmatic:critical2_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeUnbiased + b_critical1 + `b_logConEinigeUnbiased:critical1` + `b_logConEinigeUnbiased:respond_typePragmatic` + `b_respond_typePragmatic:critical1` + `b_logConEinigeUnbiased:respond_typePragmatic:critical1`,
+         `b_logConEinigeInfelict:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeInfelict + `b_logConEinigeInfelict:respond_typePragmatic`,
+         `b_logConEinigeInfelict:respond_typePragmatic:critical1_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeInfelict + b_critical2 + `b_logConEinigeInfelict:critical2` + `b_logConEinigeInfelict:respond_typePragmatic` + `b_respond_typePragmatic:critical2` + `b_logConEinigeInfelict:respond_typePragmatic:critical2`,
+         `b_logConEinigeInfelict:respond_typePragmatic:critical2_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeInfelict + b_critical1 + `b_logConEinigeInfelict:critical1` + `b_logConEinigeInfelict:respond_typePragmatic` + `b_respond_typePragmatic:critical1` + `b_logConEinigeInfelict:respond_typePragmatic:critical1`,
+         `b_logConEinigeFalse:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeFalse + `b_logConEinigeFalse:respond_typePragmatic`,
+         `b_logConEinigeFalse:respond_typePragmatic:critical1_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeFalse + b_critical2 + `b_logConEinigeFalse:critical2` + `b_logConEinigeFalse:respond_typePragmatic` + `b_respond_typePragmatic:critical2` + `b_logConEinigeFalse:respond_typePragmatic:critical2`,
+         `b_logConEinigeFalse:respond_typePragmatic:critical2_new` = b_Intercept + b_respond_typePragmatic + b_logConEinigeFalse + b_critical1 + `b_logConEinigeFalse:critical1` + `b_logConEinigeFalse:respond_typePragmatic` + `b_respond_typePragmatic:critical1` + `b_logConEinigeFalse:respond_typePragmatic:critical1`) %>%
+  gather_draws(b_respond_typePragmatic_new,
+               `b_respond_typePragmatic:critical1_new`,
+               `b_respond_typePragmatic:critical2_new`,
+               `b_logConEinigeUnbiased:respond_typePragmatic_new`,
+               `b_logConEinigeUnbiased:respond_typePragmatic:critical1_new`,
+               `b_logConEinigeUnbiased:respond_typePragmatic:critical2_new`,
+               `b_logConEinigeInfelict:respond_typePragmatic_new`,
+               `b_logConEinigeInfelict:respond_typePragmatic:critical1_new`, 
+               `b_logConEinigeInfelict:respond_typePragmatic:critical2_new`,
+               `b_logConEinigeFalse:respond_typePragmatic_new`,
+               `b_logConEinigeFalse:respond_typePragmatic:critical1_new`, 
+               `b_logConEinigeFalse:respond_typePragmatic:critical2_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_respond_typePragmatic_new",
+               "b_respond_typePragmatic:critical1_new",
+               "b_respond_typePragmatic:critical2_new",
+               "b_logConEinigeUnbiased:respond_typePragmatic_new",
+               "b_logConEinigeUnbiased:respond_typePragmatic:critical1_new",
+               "b_logConEinigeUnbiased:respond_typePragmatic:critical2_new",
+               "b_logConEinigeFalse:respond_typePragmatic_new",
+               "b_logConEinigeFalse:respond_typePragmatic:critical1_new", 
+               "b_logConEinigeFalse:respond_typePragmatic:critical2_new",
+               "b_logConEinigeInfelict:respond_typePragmatic_new",
+               "b_logConEinigeInfelict:respond_typePragmatic:critical1_new", 
+               "b_logConEinigeInfelict:respond_typePragmatic:critical2_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  scale_y_discrete(labels = c('Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate'),
+                   position = "right") +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  hjust = 1,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
+                                 c(3,3,3,3)),
+                    breaks = c("b_respond_typePragmatic_new",
+                               "b_logConEinigeUnbiased:respond_typePragmatic_new",
+                               "b_logConEinigeFalse:respond_typePragmatic_new",
+                               "b_logConEinigeInfelict:respond_typePragmatic_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False",
+                               "Infelicitous")) +
+  ggtitle("\nPragmatic")
+
+`est-crit-einige` <-
+  ggarrange(m_crit_einige_sem, m_crit_einige_mix, m_crit_einige_prag, common.legend = T, legend = "bottom", ncol = 3)
+
+# ggsave("est-crit-einige.png", height = 6, width = 10, dpi = "retina")
+
+```
+
+
+```{r fig.align='center', fig.height=10, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
+
+m_crit_alle_sem <- RT_SHAPE_respond_crit %>%
+  spread_draws(b_Intercept,
+               b_critical1,
+               b_critical2,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:critical1`,
+               `b_logConAlleBiased:critical2`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:critical1`,
+               `b_logConAlleUnbiased:critical2`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:critical1`, 
+               `b_logConAlleFalse:critical2`) %>%
+  mutate(b_logConAlleBiased_new = b_Intercept + b_logConAlleBiased,
+         `b_logConAlleBiased:critical1_new` = b_Intercept + b_logConAlleBiased + b_critical2 + `b_logConAlleBiased:critical2`,
+         `b_logConAlleBiased:critical2_new` = b_Intercept + b_logConAlleBiased + b_critical1 + `b_logConAlleBiased:critical1`,
+         b_logConAlleUnbiased_new = b_Intercept + b_logConAlleUnbiased,
+         `b_logConAlleUnbiased:critical1_new` = b_Intercept + b_logConAlleUnbiased + b_critical2 + `b_logConAlleUnbiased:critical2`,
+         `b_logConAlleUnbiased:critical2_new` = b_Intercept + b_logConAlleUnbiased + b_critical1 + `b_logConAlleUnbiased:critical1`,
+         b_logConAlleFalse_new = b_Intercept + b_logConAlleFalse,
+         `b_logConAlleFalse:critical1_new` = b_Intercept + b_logConAlleFalse + b_critical2 + `b_logConAlleFalse:critical2`,
+         `b_logConAlleFalse:critical2_new` = b_Intercept + b_logConAlleFalse + b_critical1 + `b_logConAlleFalse:critical1`) %>%
+  gather_draws(b_logConAlleBiased_new,
+               `b_logConAlleBiased:critical1_new`,
+               `b_logConAlleBiased:critical2_new`,
+               b_logConAlleUnbiased_new,
+               `b_logConAlleUnbiased:critical1_new`,
+               `b_logConAlleUnbiased:critical2_new`,
+               b_logConAlleFalse_new,
+               `b_logConAlleFalse:critical1_new`, 
+               `b_logConAlleFalse:critical2_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_logConAlleBiased_new",
+               "b_logConAlleBiased:critical1_new",
+               "b_logConAlleBiased:critical2_new",
+               "b_logConAlleUnbiased_new",
+               "b_logConAlleUnbiased:critical1_new",
+               "b_logConAlleUnbiased:critical2_new",
+               "b_logConAlleFalse_new",
+               "b_logConAlleFalse:critical1_new", 
+               "b_logConAlleFalse:critical2_new",
+               "b_logConAlleInfelict_new",
+               "b_logConAlleInfelict:critical1_new", 
+               "b_logConAlleInfelict:critical2_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  scale_y_discrete(labels = c('Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate')) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
+                                 c(3,3,3,3)),
+                    breaks = c("b_logConAlleBiased_new",
+                               "b_logConAlleUnbiased_new",
+                               "b_logConAlleFalse_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False")) +
+  ggtitle("Alle\nSemantic")
+
+m_crit_alle_mix <- RT_SHAPE_respond_crit %>%
+  spread_draws(b_Intercept,
+               b_critical1,
+               b_critical2,
+               b_respond_typeMixed,
+               `b_respond_typeMixed:critical1`,
+               `b_respond_typeMixed:critical2`,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:critical1`, 
+               `b_logConAlleBiased:critical2`,
+               `b_logConAlleBiased:respond_typeMixed`,
+               `b_logConAlleBiased:respond_typeMixed:critical1`, 
+               `b_logConAlleBiased:respond_typeMixed:critical2`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:critical1`,
+               `b_logConAlleUnbiased:critical2`,
+               `b_logConAlleUnbiased:respond_typeMixed`,
+               `b_logConAlleUnbiased:respond_typeMixed:critical1`,
+               `b_logConAlleUnbiased:respond_typeMixed:critical2`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:critical1`, 
+               `b_logConAlleFalse:critical2`,
+               `b_logConAlleFalse:respond_typeMixed`,
+               `b_logConAlleFalse:respond_typeMixed:critical1`, 
+               `b_logConAlleFalse:respond_typeMixed:critical2`) %>%
+  mutate(`b_logConAlleBiased:respond_typeMixed_new` = b_Intercept + b_logConAlleBiased + b_respond_typeMixed + `b_logConAlleBiased:respond_typeMixed`,
+         `b_logConAlleBiased:respond_typeMixed:critical1_new` = b_Intercept + b_respond_typeMixed + b_logConAlleBiased + b_critical2 + `b_logConAlleBiased:respond_typeMixed` + `b_logConAlleBiased:critical2` + `b_respond_typeMixed:critical2` + `b_logConAlleBiased:respond_typeMixed:critical2`,
+         `b_logConAlleBiased:respond_typeMixed:critical2_new` = b_Intercept + b_respond_typeMixed + b_logConAlleBiased + b_critical1 + `b_logConAlleBiased:respond_typeMixed` + `b_logConAlleBiased:critical1` + `b_respond_typeMixed:critical1` + `b_logConAlleBiased:respond_typeMixed:critical1`,
+         `b_logConAlleUnbiased:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typeMixed`,
+         `b_logConAlleUnbiased:respond_typeMixed:critical1_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + b_critical2 + `b_logConAlleUnbiased:critical2` + `b_logConAlleUnbiased:respond_typeMixed` + `b_respond_typeMixed:critical2` + `b_logConAlleUnbiased:respond_typeMixed:critical2`,
+         `b_logConAlleUnbiased:respond_typeMixed:critical2_new` = b_Intercept + b_respond_typeMixed + b_logConAlleUnbiased + b_critical1 + `b_logConAlleUnbiased:critical1` + `b_logConAlleUnbiased:respond_typeMixed` + `b_respond_typeMixed:critical1` + `b_logConAlleUnbiased:respond_typeMixed:critical1`,
+         `b_logConAlleFalse:respond_typeMixed_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + `b_logConAlleFalse:respond_typeMixed`,
+         `b_logConAlleFalse:respond_typeMixed:critical1_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + b_critical2 + `b_logConAlleFalse:critical2` + `b_logConAlleFalse:respond_typeMixed` + `b_respond_typeMixed:critical2` + `b_logConAlleFalse:respond_typeMixed:critical2`,
+         `b_logConAlleFalse:respond_typeMixed:critical2_new` = b_Intercept + b_respond_typeMixed + b_logConAlleFalse + b_critical1 + `b_logConAlleFalse:critical1` + `b_logConAlleFalse:respond_typeMixed` + `b_respond_typeMixed:critical1` + `b_logConAlleFalse:respond_typeMixed:critical1`) %>%
+  gather_draws(`b_logConAlleBiased:respond_typeMixed_new`,
+               `b_logConAlleBiased:respond_typeMixed:critical1_new`, 
+               `b_logConAlleBiased:respond_typeMixed:critical2_new`,
+               `b_logConAlleUnbiased:respond_typeMixed_new`,
+               `b_logConAlleUnbiased:respond_typeMixed:critical1_new`,
+               `b_logConAlleUnbiased:respond_typeMixed:critical2_new`,
+               `b_logConAlleFalse:respond_typeMixed_new`,
+               `b_logConAlleFalse:respond_typeMixed:critical1_new`, 
+               `b_logConAlleFalse:respond_typeMixed:critical2_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_logConAlleBiased:respond_typeMixed_new",
+               "b_logConAlleBiased:respond_typeMixed:critical1_new", 
+               "b_logConAlleBiased:respond_typeMixed:critical2_new",
+               "b_logConAlleUnbiased:respond_typeMixed_new",
+               "b_logConAlleUnbiased:respond_typeMixed:critical1_new",
+               "b_logConAlleUnbiased:respond_typeMixed:critical2_new",
+               "b_logConAlleFalse:respond_typeMixed_new",
+               "b_logConAlleFalse:respond_typeMixed:critical1_new", 
+               "b_logConAlleFalse:respond_typeMixed:critical2_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  hjust = .5,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_blank()) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
+                                 c(3,3,3,3)),
+                    breaks = c("b_logConAlleBiased:respond_typeMixed_new",
+                               "b_logConAlleUnbiased:respond_typeMixed_new",
+                               "b_logConAlleFalse:respond_typeMixed_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False")) +
+  ggtitle("\nMixed")
+
+m_crit_alle_prag <- RT_SHAPE_respond_crit %>%
+  spread_draws(b_Intercept,
+               b_critical1,
+               b_critical2,
+               b_respond_typePragmatic,
+               `b_respond_typePragmatic:critical1`,
+               `b_respond_typePragmatic:critical2`,
+               b_logConAlleBiased,
+               `b_logConAlleBiased:critical1`, 
+               `b_logConAlleBiased:critical2`,
+               `b_logConAlleBiased:respond_typePragmatic`,
+               `b_logConAlleBiased:respond_typePragmatic:critical1`, 
+               `b_logConAlleBiased:respond_typePragmatic:critical2`,
+               b_logConAlleUnbiased,
+               `b_logConAlleUnbiased:critical1`,
+               `b_logConAlleUnbiased:critical2`,
+               `b_logConAlleUnbiased:respond_typePragmatic`,
+               `b_logConAlleUnbiased:respond_typePragmatic:critical1`,
+               `b_logConAlleUnbiased:respond_typePragmatic:critical2`,
+               b_logConAlleFalse,
+               `b_logConAlleFalse:critical1`, 
+               `b_logConAlleFalse:critical2`,
+               `b_logConAlleFalse:respond_typePragmatic`,
+               `b_logConAlleFalse:respond_typePragmatic:critical1`, 
+               `b_logConAlleFalse:respond_typePragmatic:critical2`) %>%
+  mutate(`b_logConAlleBiased:respond_typePragmatic_new` = b_Intercept + b_logConAlleBiased + b_respond_typePragmatic + `b_logConAlleBiased:respond_typePragmatic`,
+         `b_logConAlleBiased:respond_typePragmatic:critical1_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleBiased + b_critical2 + `b_logConAlleBiased:respond_typePragmatic` + `b_logConAlleBiased:critical2` + `b_respond_typePragmatic:critical2` + `b_logConAlleBiased:respond_typePragmatic:critical2`,
+         `b_logConAlleBiased:respond_typePragmatic:critical2_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleBiased + b_critical1 + `b_logConAlleBiased:respond_typePragmatic` + `b_logConAlleBiased:critical1` + `b_respond_typePragmatic:critical1` + `b_logConAlleBiased:respond_typePragmatic:critical1`,
+         `b_logConAlleUnbiased:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleUnbiased + `b_logConAlleUnbiased:respond_typePragmatic`,
+         `b_logConAlleUnbiased:respond_typePragmatic:critical1_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleUnbiased + b_critical2 + `b_logConAlleUnbiased:critical2` + `b_logConAlleUnbiased:respond_typePragmatic` + `b_respond_typePragmatic:critical2` + `b_logConAlleUnbiased:respond_typePragmatic:critical2`,
+         `b_logConAlleUnbiased:respond_typePragmatic:critical2_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleUnbiased + b_critical1 + `b_logConAlleUnbiased:critical1` + `b_logConAlleUnbiased:respond_typePragmatic` + `b_respond_typePragmatic:critical1` + `b_logConAlleUnbiased:respond_typePragmatic:critical1`,
+         `b_logConAlleFalse:respond_typePragmatic_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleFalse + `b_logConAlleFalse:respond_typePragmatic`,
+         `b_logConAlleFalse:respond_typePragmatic:critical1_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleFalse + b_critical2 + `b_logConAlleFalse:critical2` + `b_logConAlleFalse:respond_typePragmatic` + `b_respond_typePragmatic:critical2` + `b_logConAlleFalse:respond_typePragmatic:critical2`,
+         `b_logConAlleFalse:respond_typePragmatic:critical2_new` = b_Intercept + b_respond_typePragmatic + b_logConAlleFalse + b_critical1 + `b_logConAlleFalse:critical1` + `b_logConAlleFalse:respond_typePragmatic` + `b_respond_typePragmatic:critical1` + `b_logConAlleFalse:respond_typePragmatic:critical1`) %>%
+  gather_draws(`b_logConAlleBiased:respond_typePragmatic_new`,
+               `b_logConAlleBiased:respond_typePragmatic:critical1_new`, 
+               `b_logConAlleBiased:respond_typePragmatic:critical2_new`,
+               `b_logConAlleUnbiased:respond_typePragmatic_new`,
+               `b_logConAlleUnbiased:respond_typePragmatic:critical1_new`,
+               `b_logConAlleUnbiased:respond_typePragmatic:critical2_new`,
+               `b_logConAlleFalse:respond_typePragmatic_new`,
+               `b_logConAlleFalse:respond_typePragmatic:critical1_new`, 
+               `b_logConAlleFalse:respond_typePragmatic:critical2_new`) %>%
+  mutate(.variable = factor(x = .variable, 
+         levels = c("b_logConAlleBiased:respond_typePragmatic_new",
+               "b_logConAlleBiased:respond_typePragmatic:critical1_new", 
+               "b_logConAlleBiased:respond_typePragmatic:critical2_new",
+               "b_logConAlleUnbiased:respond_typePragmatic_new",
+               "b_logConAlleUnbiased:respond_typePragmatic:critical1_new",
+               "b_logConAlleUnbiased:respond_typePragmatic:critical2_new",
+               "b_logConAlleFalse:respond_typePragmatic_new",
+               "b_logConAlleFalse:respond_typePragmatic:critical1_new", 
+               "b_logConAlleFalse:respond_typePragmatic:critical2_new"))) %>% 
+  ggplot(aes(y = .variable, x = .value, fill = .variable)) +
+  stat_halfeye(.width = c(.90, .95), alpha = .6) +
+  geom_pointinterval(alpha = .4) +
+  scale_y_discrete(labels = c('Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate',
+                              'Dreiecke', 
+                              'Kreise', 
+                              'Quadrate'),
+                   position = "right") +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(face = "bold",
+                                  size = 14,
+                                  hjust = 1,
+                                  margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        legend.position = "none",
+        panel.grid.major.y = element_blank(), 
+        axis.text.x = element_text(face = "bold", 
+                                   margin = margin(t = 10, r = 0, b = 15, l = 0)),
+        axis.text.y = element_text(face = "bold", 
+                                   margin = margin(t = 0, r = 10, b = 0, l = 0))) +
+  scale_fill_manual(values = rep(c("#F7882F", "#F7C331", "#B2182B", "#94618E"), 
+                                 c(3,3,3,3)),
+                    breaks = c("b_logConAlleBiased:respond_typeMixed_new",
+                               "b_logConAlleUnbiased:respond_typeMixed_new",
+                               "b_logConAlleFalse:respond_typeMixed_new"),
+                    labels = c("Biased",
+                               "Unbiased",
+                               "False")) +
+  ggtitle("\nPragmatic")
+
+`est-crit-alle` <-
+  ggarrange(m_crit_alle_sem, m_crit_alle_mix, m_crit_alle_prag, ncol = 3)
+
+# ggsave("est-crit-alle.png", height = 6, width = 10, dpi = "retina")
+
+`est-crit-respond` <- 
+  ggarrange(`est-crit-einige`, `est-crit-alle`, nrow = 2)
+
+`est-crit-respond`
+ 
+ # ggsave("est-crit-respond.png", height = 12, width = 10, dpi = "retina")
+
+```
+
+#### Model 3 (condition x pragmatic profile x block)
+
+```{r fig.align='center', fig.height=10, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
 
 m_trial_einige_sem <- RT_SHAPE_respond_trial %>%
   spread_draws(b_Intercept,
@@ -1627,12 +1893,15 @@ m_trial_einige_prag <- RT_SHAPE_respond_trial %>%
                                "Infelicitous")) +
   ggtitle("\nPragmatic")
 
-ggarrange(m_trial_einige_sem, m_trial_einige_mix, m_trial_einige_prag, common.legend = T, legend = "bottom", ncol = 3)
+`est-block-einige` <-
+  ggarrange(m_trial_einige_sem, m_trial_einige_mix, m_trial_einige_prag, common.legend = T, legend = "bottom", ncol = 3)
+
+# ggsave("est-block-einige.png", height = 6, width = 10, dpi = "retina")
 
 ```
 
 
-```{r fig.align='center', fig.height=6, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
+```{r fig.align='center', fig.height=10, fig.width=10, echo=FALSE, warning=FALSE, message=FALSE}
 
 m_trial_alle_sem <- RT_SHAPE_respond_trial %>%
   spread_draws(b_Intercept,
@@ -1935,82 +2204,16 @@ m_trial_alle_prag <- RT_SHAPE_respond_trial %>%
                                "False")) +
   ggtitle("\nPragmatic")
 
-ggarrange(m_trial_alle_sem, m_trial_alle_mix, m_trial_alle_prag, common.legend = T, legend = "bottom", ncol = 3)
+`est-block-alle` <-
+  ggarrange(m_trial_alle_sem, m_trial_alle_mix, m_trial_alle_prag, ncol = 3)
 
-```
+# ggsave("est-block-alle.png", height = 6, width = 10, dpi = "retina")
+  
+`est-block-respond` <- 
+  ggarrange(`est-block-einige`, `est-block-alle`, nrow = 2)
 
-#### Hypothesis tests
-
-'CI': 90%-CI for one-sided and 95%-CI for two-sided hypotheses.
-
-'*': For one-sided hypotheses, the posterior probability exceeds 95%; for two-sided hypotheses, the value tested against lies outside the 95%-CI.
-
-Posterior probabilities of point hypotheses assume equal prior probabilities.
-
-```{r fig.align='center', echo=FALSE, warning=FALSE, message=FALSE}
-
-# Effect 'Einige' - Block 1
-einige_1 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased > Intercept")
-
-einige_1$hypothesis %>%
-  mutate(Hypothesis = "[1-21] Einige Unbiased > [1-21] Einige Biased") %>% 
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Einige' - Block 2
-einige_2 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_2 + logConEinigeUnbiased:trial_nametask_three_2 > Intercept + trial_nametask_three_2 ")
-
-einige_2$hypothesis %>%
-  mutate(Hypothesis = "[22-42] Einige Unbiased > [22-42] Einige Biased") %>%
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Einige' - Block 3
-einige_3 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_3 + logConEinigeUnbiased:trial_nametask_three_3 > Intercept + trial_nametask_three_3 ")
-
-einige_3$hypothesis %>%
-  mutate(Hypothesis = "[43-63] Einige Unbiased > [43-63] Einige Biased") %>%
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Einige' - Block 4
-einige_4 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConEinigeUnbiased + trial_nametask_three_4 + logConEinigeUnbiased:trial_nametask_three_4 > Intercept + trial_nametask_three_4")
-
-einige_4$hypothesis %>%
-  mutate(Hypothesis = "[64-84] Einige Unbiased > [64-84] Einige Biased") %>%
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Alle' - Block 1
-alle_1 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased > Intercept + logConAlleBiased")
-
-alle_1$hypothesis %>%
-  mutate(Hypothesis = "[1-21] Alle Unbiased > [1-21] Alle Biased") %>%
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Alle' - Block 2
-alle_2 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_2 + logConAlleUnbiased:trial_nametask_three_2 > Intercept + logConAlleBiased + trial_nametask_three_2 + logConAlleBiased:trial_nametask_three_2")
-
-alle_2$hypothesis %>%
-  mutate(Hypothesis = "[22-42] Alle Unbiased > [22-42] Alle Biased") %>%
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Alle' - Block 3
-alle_3 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_3 + logConAlleUnbiased:trial_nametask_three_3 > Intercept + logConAlleBiased + trial_nametask_three_3 + logConAlleBiased:trial_nametask_three_3")
-
-alle_3$hypothesis %>%
-  mutate(Hypothesis = "[43-63] Alle Unbiased > [43-63] Alle Biased") %>%
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
-
-# Effect 'Alle' - Block 4
-alle_4 <- brms::hypothesis(RT_SHAPE_trial, "Intercept + logConAlleUnbiased + trial_nametask_three_4 + logConAlleUnbiased:trial_nametask_three_4 > Intercept + logConAlleBiased + trial_nametask_three_4 + logConAlleBiased:trial_nametask_three_4")
-
-alle_4$hypothesis %>%
-  mutate(Hypothesis = "[64-84] Alle Unbiased > [64-84] Alle Biased") %>%
-  kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
+`est-block-respond`
+ 
+ # ggsave("est-block-respond.png", height = 12, width = 10, dpi = "retina")
 
 ```
