@@ -226,14 +226,18 @@ hypotheses <-
 tests <- brms::hypothesis(RT_SHAPE_crit, hypotheses)
 
 tests$hypothesis %>%
-  mutate(Hypothesis = case_when(Hypothesis == "(logConEinigeUnbiased+critical1+logConEinigeUnbiased:critical1)-(critical1) > 0" ~ "[Dreiecke] Einige Unbiased > [Dreiecke] Einige Biased",
-                        Hypothesis == "(logConEinigeUnbiased+critical2+logConEinigeUnbiased:critical2)-(critical2) > 0" ~ "[Kreise] Einige Unbiased > [Kreise] Einige Biased",
-                      Hypothesis == "((logConEinigeUnbiased+critical2+logConEinigeUnbiased:critical2)-(logConEinigeUnbiased+critical1+logConEinigeUnbiased:critical1))-(critical2-critical1) > 0"  ~ "[Quadrate] Einige Unbiased > [Quadrate] Einige Biased",
-                      Hypothesis == "(logConAlleUnbiased+critical1+logConAlleUnbiased:critical1)-(logConAlleBiased+critical1+logConAlleBiased:critical1) > 0" ~ "[Dreiecke] Alle Unbiased > [Dreiecke] Alle Biased",
-                      Hypothesis == "(logConAlleUnbiased+critical2+logConAlleUnbiased:critical2)-(logConAlleBiased+critical2+logConAlleBiased:critical2) > 0" ~ "[Kreise] Alle Unbiased > [Kreise] Alle Biased",
-                      Hypothesis == "((logConAlleUnbiased+critical2+logConAlleUnbiased:critical2)-(logConAlleUnbiased+critical1+logConAlleUnbiased:critical1))-((logConAlleBiased+critical2+logConAlleBiased:critical2)-(logConAlleBiased+critical1+logConAlleBiased:critical1)) > 0" ~ "[Quadrate] Alle Unbiased > [Quadrate] Alle Biased")) %>% 
+  mutate(Hypothesis = case_when(Hypothesis == "(logConEinigeUnbiased+critical1+logConEinigeUnbiased:critical1)-(critical1) > 0" ~ "[Dreiecke] Unbiased > Biased",
+                        Hypothesis == "(logConEinigeUnbiased+critical2+logConEinigeUnbiased:critical2)-(critical2) > 0" ~ "[Kreise] Unbiased > Biased",
+                      Hypothesis == "((logConEinigeUnbiased+critical2+logConEinigeUnbiased:critical2)-(logConEinigeUnbiased+critical1+logConEinigeUnbiased:critical1))-(critical2-critical1) > 0"  ~ "[Quadrate] Unbiased > Biased",
+                      Hypothesis == "(logConAlleUnbiased+critical1+logConAlleUnbiased:critical1)-(logConAlleBiased+critical1+logConAlleBiased:critical1) > 0" ~ "[Dreiecke] Unbiased > Biased",
+                      Hypothesis == "(logConAlleUnbiased+critical2+logConAlleUnbiased:critical2)-(logConAlleBiased+critical2+logConAlleBiased:critical2) > 0" ~ "[Kreise] Unbiased > Biased",
+                      Hypothesis == "((logConAlleUnbiased+critical2+logConAlleUnbiased:critical2)-(logConAlleUnbiased+critical1+logConAlleUnbiased:critical1))-((logConAlleBiased+critical2+logConAlleBiased:critical2)-(logConAlleBiased+critical1+logConAlleBiased:critical1)) > 0" ~ "[Quadrate] Unbiased > Biased")) %>%
+  # select(1:7) %>% 
+  mutate_if(is.numeric, ~ round(., 2)) %>% 
   kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
+  kable_styling(latex_options = "striped") %>% 
+  pack_rows("Einige", 1, 3) %>%
+  pack_rows("Alle", 4, 6)
 
 ```
 
@@ -532,16 +536,20 @@ hypotheses <-
 tests <- brms::hypothesis(RT_SHAPE_trial, hypotheses)
 
 tests$hypothesis %>%
-  mutate(Hypothesis = case_when(Hypothesis == "(Intercept+logConEinigeUnbiased)-(Intercept) > 0" ~ "[1-21] Einige Unbiased > [1-21] Einige Biased",
-                        Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_2+logConEinigeUnbiased:trial_nametask_three_2)-(Intercept+trial_nametask_three_2) > 0" ~ "[22-42] Einige Unbiased > [22-42] Einige Biased",
-                      Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_3+logConEinigeUnbiased:trial_nametask_three_3)-(Intercept+trial_nametask_three_3) > 0"  ~ "[43-63] Einige Unbiased > [43-63] Einige Biased",
-                      Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_4+logConEinigeUnbiased:trial_nametask_three_4)-(Intercept+trial_nametask_three_4) > 0" ~ "[64-84] Einige Unbiased > [64-84] Einige Biased",
-                      Hypothesis == "(Intercept+logConAlleUnbiased)-(Intercept+logConAlleBiased) > 0" ~ "[1-21] Alle Unbiased > [1-21] Alle Biased",
-                      Hypothesis == "(Intercept+logConAlleUnbiased+trial_nametask_three_2+logConAlleUnbiased:trial_nametask_three_2)-(Intercept+logConAlleBiased+trial_nametask_three_2+logConAlleBiased:trial_nametask_three_2) > 0" ~ "[22-42] Alle Unbiased > [22-42] Alle Biased",
-                   Hypothesis ==   "(Intercept+logConAlleUnbiased+trial_nametask_three_3+logConAlleUnbiased:trial_nametask_three_3)-(Intercept+logConAlleBiased+trial_nametask_three_3+logConAlleBiased:trial_nametask_three_3) > 0" ~ "[43-63] Alle Unbiased > [43-63] Alle Biased",
-                    Hypothesis ==  "(Intercept+logConAlleUnbiased+trial_nametask_three_4+logConAlleUnbiased:trial_nametask_three_4)-(Intercept+logConAlleBiased+trial_nametask_three_4+logConAlleBiased:trial_nametask_three_4) > 0" ~ "[64-84] Alle Unbiased > [64-84] Alle Biased")) %>% 
+  mutate(Hypothesis = case_when(Hypothesis == "(Intercept+logConEinigeUnbiased)-(Intercept) > 0" ~ "[1-21] Unbiased > Biased",
+                        Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_2+logConEinigeUnbiased:trial_nametask_three_2)-(Intercept+trial_nametask_three_2) > 0" ~ "[22-42] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_3+logConEinigeUnbiased:trial_nametask_three_3)-(Intercept+trial_nametask_three_3) > 0"  ~ "[43-63] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConEinigeUnbiased+trial_nametask_three_4+logConEinigeUnbiased:trial_nametask_three_4)-(Intercept+trial_nametask_three_4) > 0" ~ "[64-84] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased)-(Intercept+logConAlleBiased) > 0" ~ "[1-21] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased+trial_nametask_three_2+logConAlleUnbiased:trial_nametask_three_2)-(Intercept+logConAlleBiased+trial_nametask_three_2+logConAlleBiased:trial_nametask_three_2) > 0" ~ "[22-42] Unbiased > Biased",
+                   Hypothesis ==   "(Intercept+logConAlleUnbiased+trial_nametask_three_3+logConAlleUnbiased:trial_nametask_three_3)-(Intercept+logConAlleBiased+trial_nametask_three_3+logConAlleBiased:trial_nametask_three_3) > 0" ~ "[43-63] Unbiased > Biased",
+                    Hypothesis ==  "(Intercept+logConAlleUnbiased+trial_nametask_three_4+logConAlleUnbiased:trial_nametask_three_4)-(Intercept+logConAlleBiased+trial_nametask_three_4+logConAlleBiased:trial_nametask_three_4) > 0" ~ "[64-84] Unbiased > Biased")) %>% 
+  # select(1:7) %>% 
+  mutate_if(is.numeric, ~ round(., 2)) %>% 
   kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
+  kable_styling(latex_options = "striped") %>% 
+  pack_rows("Einige", 1, 4) %>%
+  pack_rows("Alle", 5, 8)
 
 ```
 
@@ -784,14 +792,18 @@ hypotheses <-
 tests <- brms::hypothesis(RT_SHAPE_respond, hypotheses)
 
 tests$hypothesis %>%
-  mutate(Hypothesis = case_when(Hypothesis == "(Intercept+logConEinigeUnbiased)-(Intercept) > 0" ~ "[semantic] Einige Unbiased > [semantic] Einige Biased",
-                        Hypothesis == "(Intercept+logConEinigeUnbiased+respond_typePragmatic+logConEinigeUnbiased:respond_typePragmatic)-(Intercept+respond_typePragmatic) > 0" ~ "[pragmatic] Einige Unbiased > [pragmatic] Einige Biased",
-                      Hypothesis == "(Intercept+logConEinigeUnbiased+respond_typeMixed+logConEinigeUnbiased:respond_typeMixed)-(Intercept+respond_typeMixed) > 0"  ~ "[mixed] Einige Unbiased > [mixed] Einige Biased",
-                      Hypothesis == "(Intercept+logConAlleUnbiased)-(Intercept+logConAlleBiased) > 0" ~ "[semantic] Alle Unbiased > [semantic] Alle Biased",
-                      Hypothesis == "(Intercept+logConAlleUnbiased+respond_typePragmatic+logConAlleUnbiased:respond_typePragmatic)-(Intercept+logConAlleBiased+respond_typePragmatic+logConAlleBiased:respond_typePragmatic) > 0" ~ "[pragmatic] Alle Unbiased > [pragmatic] Alle Biased",
-                      Hypothesis == "(Intercept+logConAlleUnbiased+respond_typeMixed+logConAlleUnbiased:respond_typeMixed)-(Intercept+logConAlleBiased+respond_typeMixed+logConAlleBiased:respond_typeMixed) > 0" ~ "[mixed] Alle Unbiased > [mixed] Alle Biased")) %>% 
+  mutate(Hypothesis = case_when(Hypothesis == "(Intercept+logConEinigeUnbiased)-(Intercept) > 0" ~ "[semantic] Unbiased > Biased",
+                        Hypothesis == "(Intercept+logConEinigeUnbiased+respond_typePragmatic+logConEinigeUnbiased:respond_typePragmatic)-(Intercept+respond_typePragmatic) > 0" ~ "[pragmatic] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConEinigeUnbiased+respond_typeMixed+logConEinigeUnbiased:respond_typeMixed)-(Intercept+respond_typeMixed) > 0"  ~ "[mixed] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased)-(Intercept+logConAlleBiased) > 0" ~ "[semantic] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased+respond_typePragmatic+logConAlleUnbiased:respond_typePragmatic)-(Intercept+logConAlleBiased+respond_typePragmatic+logConAlleBiased:respond_typePragmatic) > 0" ~ "[pragmatic] Unbiased > Biased",
+                      Hypothesis == "(Intercept+logConAlleUnbiased+respond_typeMixed+logConAlleUnbiased:respond_typeMixed)-(Intercept+logConAlleBiased+respond_typeMixed+logConAlleBiased:respond_typeMixed) > 0" ~ "[mixed] Unbiased > Biased")) %>% 
+ # select(1:7) %>%
+  mutate_if(is.numeric, ~ round(., 2)) %>% 
   kable(escape = F, align = "c") %>%
-  kable_styling(latex_options = "striped")
+  kable_styling(latex_options = "striped") %>% 
+  pack_rows("Einige", 1, 3) %>%
+  pack_rows("Alle", 4, 6)
 
 ```
 
